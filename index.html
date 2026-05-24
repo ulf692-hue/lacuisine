@@ -323,7 +323,7 @@ function load(){
 }
 function savePantry(){ try{ localStorage.setItem('lc_pantry',JSON.stringify(pantry)); }catch(e){} }
 function saveShop(){ try{ localStorage.setItem('lc_shop',JSON.stringify(shopItems)); }catch(e){} }
-function saveApiKey(){ apiKey=document.getElementById('apiKeyInput').value.trim(); try{ localStorage.setItem('lc_apikey',apiKey); }catch(e){} document.getElementById('apiNotice').style.display='none'; alert('API-nyckel sparad!'); }
+function saveApiKey(){ apiKey=document.getElementById("apiKeyInput").value.trim(); if(!apiKey)return; try{ localStorage.setItem("lc_apikey",apiKey); }catch(e){} document.getElementById("apiNotice").style.display="none"; alert("Nyckel sparad! Tar ny bild..."); if(imageBase64){ analyzeImage(); } }
 load();
 
 function showTab(name){
@@ -618,4 +618,3 @@ if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.s
 </script>
 </body>
 </html>
-
