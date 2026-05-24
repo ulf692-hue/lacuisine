@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0e0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Cuisine">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>La Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --ink:#0f0e0c; --ink2:#1a1814; --ink3:#252320;
+  --gold:#c8922a; --gold2:#e8b84b; --gold-dim:rgba(200,146,42,0.15);
+  --cream:#f5f0e6; --cream2:#e8e0d0; --muted:#7a7568; --muted2:#5a544a;
+  --border:rgba(200,146,42,0.18); --border2:rgba(200,146,42,0.35);
+  --red:#c0392b; --red-bg:rgba(192,57,43,0.12);
+  --green:#2d6a4f; --green-bg:rgba(45,106,79,0.12);
+}
+html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',sans-serif;color:var(--cream);}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:var(--ink);overflow:hidden;}
+.app::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:100;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:0.025;}
+.header{flex-shrink:0;padding:calc(env(safe-area-inset-top,0px) + 20px) 24px 0;background:var(--ink);}
+.header-rule{width:100%;height:0.5px;background:var(--border);margin-top:16px;}
+.brand{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;letter-spacing:.12em;color:var(--cream);line-height:1;}
+.brand-star{color:var(--gold);font-size:14px;letter-spacing:.3em;}
+.brand-sub{font-size:10px;font-weight:300;color:var(--muted);letter-spacing:.25em;text-transform:uppercase;}
+.tabs{flex-shrink:0;display:flex;padding:14px 24px 12px;gap:0;background:var(--ink);border-bottom:0.5px solid var(--border);}
+.tab{flex:1;padding:8px 0;background:none;border:none;font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;}
+.tab::after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--gold);transition:width .3s cubic-bezier(.4,0,.2,1);}
+.tab.active{color:var(--gold);}
+.tab.active::after{width:80%;}
+.tab i{font-size:14px;}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.pane{display:none;padding:20px 24px 120px;}
+.pane.active{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-label{font-size:9px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;margin-top:4px;}
+.camera-box{border:1px solid var(--border);border-radius:4px;padding:44px 20px;text-align:center;cursor:pointer;background:var(--ink2);transition:border-color .2s,background .2s;margin-bottom:20px;position:relative;overflow:hidden;}
+.camera-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,0.06) 0%,transparent 70%);pointer-events:none;}
+.camera-box:active{border-color:var(--gold2);background:rgba(200,146,42,0.04);}
+.cam-icon{font-size:36px;color:var(--gold);display:block;margin-bottom:14px;opacity:.7;}
+.cam-label{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--cream);letter-spacing:.06em;}
+.cam-sub{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.05em;line-height:1.5;}
+#fileInput{display:none;}
+.preview-img{width:100%;border-radius:4px;display:none;margin-bottom:16px;object-fit:cover;max-height:260px;border:0.5px solid var(--border);}
+.retake-btn{width:100%;padding:12px;background:transparent;color:var(--muted);border:0.5px solid rgba(255,255,255,0.1);border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.1em;cursor:pointer;margin-bottom:20px;display:none;transition:border-color .2s,color .2s;}
+.retake-btn:active{border-color:var(--border2);color:var(--cream);}
+.status-bar{padding:12px 16px;border-radius:4px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:16px;letter-spacing:.05em;}
+.status-bar.loading{background:var(--ink3);color:var(--muted);display:flex;border:0.5px solid var(--border);}
+.status-bar.error{background:var(--red-bg);color:#e57368;display:flex;border:0.5px solid rgba(192,57,43,0.3);}
+.ing-wrap{margin-bottom:20px;display:none;}
+.ing-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.ing-tag{font-size:11px;padding:5px 12px;background:var(--ink3);border:0.5px solid var(--border);border-radius:2px;color:var(--cream2);display:flex;align-items:center;gap:6px;letter-spacing:.04em;}
+.ing-tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;}
+.ing-add{display:flex;gap:8px;}
+.ing-add input{flex:1;padding:11px 14px;border:0.5px solid var(--border);border-radius:4px;font-family:'Jost',sans-serif;font-size:13px;background:var(--ink2);color:var(--cream);outline:none;letter-spacing:.04em;transition:border-color .2s;}
+.ing-add input::placeholder{color:var(--muted2);}
+.ing-add input:focus{border-color:var(--border2);}
+.ing-add button{padding:11px 18px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;letter-spacing:.1em;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
+.ing-add button:active{opacity:.8;}
+.btn-main{width:100%;padding:17px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;transition:opacity .15s;-webkit-appearance:none;}
+.btn-main:active{opacity:.8;}
+.btn-main:disabled{opacity:.4;}
+.btn-main.show{display:flex;}
+.recipe-cards{display:flex;flex-direction:column;gap:14px;}
+.recipe-card{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;}
+.recipe-card-header{padding:18px 18px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;cursor:pointer;}
+.recipe-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--cream);margin-bottom:8px;line-height:1.2;font-style:italic;}
+.recipe-meta{display:flex;gap:14px;}
+.recipe-badge{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px;letter-spacing:.06em;}
+.recipe-badge i{font-size:12px;}
+.match-pill{font-size:9px;font-weight:500;padding:4px 10px;border-radius:2px;white-space:nowrap;flex-shrink:0;letter-spacing:.1em;text-transform:uppercase;}
+.match-high{background:var(--green-bg);color:#6dbf9c;border:0.5px solid rgba(45,106,79,0.4);}
+.match-mid{background:rgba(200,146,42,0.1);color:var(--gold2);border:0.5px solid var(--border);}
+.recipe-body{display:none;border-top:0.5px solid var(--border);padding:18px;}
+.recipe-body.open{display:block;}
+.recipe-steps{padding-left:0;margin-bottom:14px;list-style:none;counter-reset:steps;}
+.recipe-steps li{font-size:13px;color:var(--cream2);margin-bottom:10px;line-height:1.6;padding-left:24px;position:relative;letter-spacing:.02em;counter-increment:steps;}
+.recipe-steps li::before{content:counter(steps);position:absolute;left:0;top:2px;font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--gold);font-weight:600;}
+.missing-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.recipe-missing{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.missing-tag{font-size:11px;padding:4px 10px;background:var(--red-bg);border-radius:2px;color:#e57368;letter-spacing:.04em;}
+.save-btn{width:100%;padding:13px;background:transparent;color:var(--gold);border:0.5px solid var(--border2);border-radius:4px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,color .2s;}
+.save-btn:active{background:var(--gold-dim);}
+.save-btn.saved{background:var(--green-bg);color:#6dbf9c;border-color:rgba(45,106,79,0.4);}
+.saved-list{display:flex;flex-direction:column;gap:12px;}
+.saved-item{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color .2s;}
+.saved-item:has(.saved-detail.open){border-color:var(--border2);}
+.saved-item-header{padding:16px 16px 14px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.saved-item-header:active{background:rgba(200,146,42,0.04);}
+.saved-icon-wrap{flex-shrink:0;margin-top:3px;}
+.saved-icon-wrap i{font-size:16px;color:var(--gold);opacity:.7;}
+.saved-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;font-style:italic;color:var(--cream);line-height:1.2;margin-bottom:5px;}
+.saved-meta{font-size:10px;color:var(--muted);letter-spacing:.08em;display:flex;gap:10px;flex-wrap:wrap;}
+.saved-meta-dot{color:var(--border2);}
+.saved-del{margin-left:auto;background:none;border:none;color:var(--muted2);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;opacity:.5;transition:opacity .2s;}
+.saved-del:active{opacity:1;}
+.saved-detail{display:none;border-top:0.5px solid var(--border);padding:18px 18px 20px;background:rgba(0,0,0,0.15);}
+.saved-detail.open{display:block;}
+.detail-section{margin-bottom:20px;}
+.detail-label{font-size:9px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.detail-label::after{content:'';flex:1;height:0.5px;background:var(--border);}
+.detail-ing{font-size:13px;color:var(--cream2);margin-bottom:5px;padding-left:14px;position:relative;line-height:1.5;letter-spacing:.02em;}
+.detail-ing::before{content:"·";position:absolute;left:0;color:var(--gold);}
+.detail-step{font-size:13px;color:var(--cream2);margin-bottom:10px;padding-left:26px;position:relative;line-height:1.6;letter-spacing:.02em;}
+.detail-step-num{position:absolute;left:0;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--gold);font-weight:600;top:0;}
+.detail-notes{font-size:12px;color:var(--muted);border-left:2px solid var(--gold);padding:10px 14px;line-height:1.6;letter-spacing:.02em;font-style:italic;background:var(--gold-dim);border-radius:0 4px 4px 0;}
+.cat-pill{display:inline-block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--border);padding:3px 10px;border-radius:2px;margin-bottom:14px;}
+.empty-state{text-align:center;padding:70px 20px;}
+.empty-state i{font-size:36px;color:var(--border2);display:block;margin-bottom:16px;}
+.empty-state p{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--muted);line-height:1.6;}
+.spinner{display:inline-block;width:16px;height:16px;border:1.5px solid rgba(200,146,42,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bottom-safe{height:env(safe-area-inset-bottom,0px);background:var(--ink);flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <span class="brand-name">La Cuisine</span>
+      <span class="brand-star">✦ ✦ ✦</span>
+    </div>
+    <div class="brand-sub">Pour les esprits exigeants</div>
+    <div class="header-rule"></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('scan')" id="tab-scan"><i class="ti ti-camera"></i> Scanner</button>
+    <button class="tab" onclick="showTab('recipes')" id="tab-recipes"><i class="ti ti-sparkles"></i> Résultats</button>
+    <button class="tab" onclick="showTab('saved')" id="tab-saved"><i class="ti ti-book"></i> Répertoire</button>
+  </div>
+  <div class="content">
+    <div class="pane active" id="pane-scan">
+      <div class="camera-box" id="cameraBox" onclick="document.getElementById('fileInput').click()">
+        <i class="ti ti-aperture cam-icon"></i>
+        <div class="cam-label">Dokumentera ditt lager</div>
+        <div class="cam-sub">Fotografera kylskåp, skafferi eller råvaror<br>— AI analyserar och föreslår recept</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleImage(event)">
+      <img id="previewImg" class="preview-img" alt="Råvaror">
+      <button class="retake-btn" id="retakeBtn" onclick="retake()"><i class="ti ti-refresh"></i> &nbsp;Ny exponering</button>
+      <div class="status-bar" id="statusBar">
+        <span class="spinner" id="statusSpinner"></span>
+        <span id="statusText">Analyserar råvaror...</span>
+      </div>
+      <div class="ing-wrap" id="ingWrap">
+        <div class="section-label">Identifierade råvaror</div>
+        <div class="ing-tags" id="ingTags"></div>
+        <div class="ing-add">
+          <input type="text" id="ingInput" placeholder="Tillsätt manuellt..." onkeydown="if(event.key==='Enter'){addIngredient();this.blur()}">
+          <button onclick="addIngredient()">+ Lägg till</button>
+        </div>
+      </div>
+      <button class="btn-main" id="findBtn" onclick="findRecipes()"><i class="ti ti-wand"></i>&nbsp;&nbsp;Komponera recept</button>
+    </div>
+    <div class="pane" id="pane-recipes">
+      <div id="recipesContainer">
+        <div class="empty-state"><i class="ti ti-scan"></i><p>Dokumentera ditt lager<br>för att se vad som är möjligt.</p></div>
+      </div>
+    </div>
+    <div class="pane" id="pane-saved">
+      <div id="savedContainer"></div>
+    </div>
+  </div>
+  <div class="bottom-safe"></div>
+</div>
+<script>
+const PREDEFINED = [
+  {
+    id:"pre1", name:"Boeuf Bourguignon", category:"Kött · Longue cuisson",
+    time:"3,5 tim", portions:"6 pers", source:"Michelin-inspirerad · Maj 2025",
+    ingredients:[
+      "1150 g högrev, 5 cm kuber","280 g rökt sidfläsk, lardons",
+      "60 g osaltat smör + 30 g till montering","2 msk neutral olja",
+      "200 g gul lök, brunoised","150 g morot, brunoised","80 g selleri, brunoised",
+      "5 vitlöksklyftor","2 msk dubbelkoncentrerad tomatpuré",
+      "700 ml pinot noir / bourgogne","350 ml kalvfond",
+      "4 kvistar timjan, 2 lagerblad","1 tsk ancho chilipulver",
+      "300 g kantareller, förvällda","250 g inlagd syltlök, sköljd",
+      "1 tsk dijonsenap","Flingsalt, nymalen svartpeppar"
+    ],
+    steps:[
+      "Marinera köttet i rödvin, timjan och lagerblad minst 4 h. Torka av noga — spara vinet.",
+      "Blanchera lardonsen 2 min i kallt vatten, häll av och torka. Bryn gyllenbrunt i smör+olja. Reservera.",
+      "Bryn köttet i omgångar på maxvärme — djupt brun yta på alla sidor (Maillard). Reservera.",
+      "Bygg mirepoix: fräs lök, morot, selleri mjukt 8 min. Tillsätt vitlök + ancho, rör 1 min (blooming).",
+      "Tomatpuré 2 min. Deglacera med marinadvinet, tillsätt fond. Allt tillbaka i grytan.",
+      "Ugn 150°C med lock, 2,5–3 tim. Köttet ska ha tuggmotstånd — inte pulled.",
+      "Ta upp köttet. Sila såsen och reducera tills blank (finger-sked-test). 15–20 min.",
+      "Monter au beurre: rör ner kallt smör + dijonsenap i den silade såsen.",
+      "Syltlök + kantareller de sista 10 min. Servera med blomkålspuré (LCHF)."
+    ],
+    notes:"Tillagad 15 maj 2025. Vin: Côtes du Rhône. 2,5 h i ugnen → top notch. Syltlöken sköljdes lätt för att dämpa ättikssmaken. Dijon + monter au beurre är det som lyfter från hemmakok till restaurang."
+  },
+  {
+    id:"pre2", name:"Sjömansbiff — imponerande version", category:"Kött · Husmanskost lyft",
+    time:"2,5 tim", portions:"4 pers", source:"Autentisk teknik",
+    ingredients:[
+      "800 g bogbiff, skuren TVÄRS fibrerna i 0,5–1 cm skivor",
+      "800 g fast potatis (Amandine), knappt 1 cm","3 gula lökar, tunt skivade",
+      "2 märgben — starkt rekommenderat","330 ml porter eller mörkt lager",
+      "2 msk mörk oxfond (koncentrerad)","1 msk japansk soja (Kikkoman)",
+      "200 ml vatten","3 lagerblad, färsk timjan",
+      "50 g smör","Persilja, saltgurka, rårörda lingon"
+    ],
+    steps:[
+      "Ugn 150°C. Skär köttet TVÄRS fibrerna — avgörande för mörheten. Salta generöst.",
+      "Bryn löken långsamt gyllenbrun i hälften av smöret, ca 10 min. Reservera.",
+      "Rykande het panna. Bryn köttet i omgångar — djupt brun yta 1–2 min/sida. Maillard-reaktionen är allt.",
+      "Varva: potatis → lök → kött, salta och peppra mellan varven. Avsluta med potatisskikt.",
+      "Blanda porter, fond, soja och vatten. Häll över. Lägg i lagerblad, timjan och märgbenen.",
+      "Lock, ugn 150°C i 2–2,5 tim. Servera direkt ur grytan med garnering."
+    ],
+    notes:"Märgbenen och japansk soja är de hemliga vapnen ingen talar om. Porter ger djup utan beska. Tvärskärningen av köttet är ICKE FÖRHANDLINGSBAR."
+  },
+  {
+    id:"pre3", name:"Kokosmjölkscurry med kyckling", category:"Fågel · Indisk bas",
+    time:"35 min", portions:"4 pers", source:"Improviserad från kylen · Slutgiltig version",
+    ingredients:[
+      "600 g kycklinglårfilé","2 msk kokosolja","20 g smör",
+      "2 tsk lökpulver","3 vitlöksklyftor, hackade",
+      "1 tsk gurkmeja","2 tsk garam masala","2 msk karrypulver",
+      "1 tsk cayennepeppar","1 tsk paprikapulver","1 tsk citronpeppar",
+      "2 tsk sambal oelek","3 msk krossad tomat",
+      "1 dl vispgrädde","1 dl kokosmjölk/kokoskräm",
+      "1 tsk örtsalt","1 msk arrowrot (redning)",
+      "2 morötter, skivade","200 g strimlad kål","3 dl ris"
+    ],
+    steps:[
+      "Koka riset enligt förpackning. Håll varmt.",
+      "Skär kycklingen i bitar. Smält kokosolja + smör i vid panna på hög värme. Bryn kycklingen ordentligt runtom tills gyllene och fin stekyta. Ta upp och lägg åt sidan.",
+      "Sänk till medelvärme. Fräs lökpulver och hackad vitlök i 2 minuter tills doften släpper.",
+      "Blomma upp kryddorna: tillsätt gurkmeja, garam masala, karrypulver, cayenne, paprikapulver och citronpeppar direkt i pannan. Rör konstant i 60 sekunder — detta är nyckeln till djup smak. Tillsätt sambal och krossad tomat, rör om.",
+      "Lägg i morötter i skivor och strimlad kål. Häll på vispgrädde och kokosmjölk. Lägg tillbaka kycklingen. Sjud under lock på låg värme tills kycklingen är genomkokt och morötterna mjuka, ca 20 min.",
+      "Red av med arrowrot: blanda med 2 msk kallt vatten till slät pasta. Rör ner i pannan, sjud 2 min tills såsen tjocknar och blir blank. Smaka av med örtsalt.",
+      "Servera över riset. Toppa med extra cayenne eller sambal för mer hetta. Garam masala kan strös på vid servering för aromdjup."
+    ],
+    notes:"Hemligheten är steg 4 — fräs alltid torra kryddor i het olja innan vätskan tillsätts. Det aktiverar fettlösliga aromämnen och ger helt annan djup. Arrowrot ger blank, slät sås till skillnad från mjöl. 1 dl grädde + 1 dl kokosmjölk = perfekt balans."
+  },
+  {
+    id:"pre4", name:"Chilli con Carne — på riktigt", category:"Kött · Mexikansk teknik",
+    time:"3–4 tim", portions:"6 pers", source:"Autentisk — torkade chilis",
+    ingredients:[
+      "1–1,2 kg högrev eller fransyska, 3–4 cm kuber",
+      "Salt, peppar, lite mjöl att pudra med",
+      "Chilipasta: 3–4 torkade ancho-chilis",
+      "Chilipasta: 2–3 torkade guajillo-chilis",
+      "Chilipasta: 1 chipotle (rökt jalapeño, torkad eller på burk i adobo)",
+      "2 gula lökar, grovhackade","5 vitlöksklyftor",
+      "1 burk krossade tomater","2 dl porter eller stout",
+      "2 dl nötbuljong","1 tsk spiskummin (rostad och mortlad)",
+      "1 tsk oregano (helst mexikansk)","20 g mörk choklad 70%",
+      "1 msk äppelcidervinäger (mot slutet)",
+      "2 burkar kidney beans (tillsätts sist)"
+    ],
+    steps:[
+      "Chilipasta: rosta chilifrukterna torrt i panna 1–2 min. Blötlägg i hett vatten 20 min. Mixa med lite blötläggningsvatten till slät pasta.",
+      "Bryn köttet i omgångar i gjutjärn — hårt och torrt, djupt brun stekyta. Ta upp och lägg åt sidan.",
+      "Stek lök mjuk i samma gryta. Tillsätt vitlök.",
+      "Rör ner chilipastan och rostad spiskummin. Stek 2–3 min.",
+      "Lägg tillbaka köttet. Häll på porter, krossade tomater och buljong.",
+      "Sjud på låg värme 2,5–3 timmar tills köttet faller isär. Rör om emellanåt.",
+      "Dra isär köttet grovt med två gafflar direkt i grytan.",
+      "Tillsätt choklad, äppelcidervinäger och kidney beans. Sjud 20 min till.",
+      "Smaka av — ska vara djupt, rökigt, lite syrligt. Servera med gräddfil och hackad lök."
+    ],
+    notes:"Torkade chilis (inte pulver) är skillnaden mellan riktig chilli och vardagschilli. Chokladen tar bort beska. Vinägern lyfter allt sista minuten. Ännu bättre dag 2."
+  },
+  {
+    id:"pre5", name:"Ragù alla Bolognese", category:"Pasta · Italiensk klassiker",
+    time:"3 tim", portions:"4 pers", source:"Accademia Italiana della Cucina 2023",
+    ingredients:[
+      "300 g grovmalen nötfärs (helst högrev, rikt på kollagen)",
+      "150 g pancetta — finhackad, EJ rökt",
+      "1 gul lök, finhackad med kockkniv (ej matberedare)",
+      "1 morot, finhackad","2 stjälkar blekselleri, finhackad",
+      "1,5 dl torrt vitt vin (alt. rött för djupare smak)",
+      "2 msk tomatpuré","200 g passerade tomater",
+      "1–2 dl varm köttbuljong","1 dl helmjölk",
+      "Olivolja","Salt, svartpeppar",
+      "Tagliatelle (traditionell pasta — inte spaghetti)"
+    ],
+    steps:[
+      "Smält pancettan i olivolja i gjutjärnsgryta på medelvärme.",
+      "Soffritto: fräs lök, morot och selleri på låg värme tills mjukt men INTE brynt. Finhackat med kockkniv — konsistensen är avgörande.",
+      "Höj värmen. Bryn köttet 10 min under konstant omrörning tills genomstekt och vätskan avdunstat.",
+      "Deglacera med vinet — koka bort alkoholen helt, ca 5 min.",
+      "Tillsätt tomatpuré + passerade tomater + varm buljong. Rör om.",
+      "Sjud med lock på lägsta möjliga värme 2–3 timmar. Späd med varm buljong vid behov — ragùn ska vara rik och tjock, inte vattnig.",
+      "Sista 20 min: häll i helmjölken. Låt integrera helt — ger krämig konsistens och mjukar upp syran.",
+      "Koka tagliatelle al dente. Blanda pasta och ragù i pannan, inte på tallriken."
+    ],
+    notes:"Inga kryddor utöver salt och peppar — inget vitlök, ingen oregano, ingen basilika. Det är råvarorna som ska briljera. Mjölken är den hemliga ingrediensen som chockar folk mest. Helmjölk, inte grädde."
+  },
+  {
+    id:"pre6", name:"Köttfärs, vitkål & crème fraîche", category:"Snabbt · LCHF · 20 min",
+    time:"20 min", portions:"2 pers", source:"LCHF snabbrätt",
+    ingredients:[
+      "400 g kryddad nötfärs","200 g strimlad vitkål",
+      "2 msk smör","2 dl crème fraîche",
+      "2 msk ajvar stark","1 msk sambal oelek",
+      "Salt, svartpeppar","Valfritt: 1–2 ägg, stekta, på toppen"
+    ],
+    steps:[
+      "Stek vitkålen i smör tills mjuk och lätt karamelliserad. Salta. Reservera.",
+      "Stek färsen genomgående. Salta och peppra.",
+      "Crème fraîche + ajvar + sambal i pannan. Sjud ihop 2–3 min.",
+      "Vitkål under, köttfärssås över. Stekt ägg på toppen för extra mättnad."
+    ],
+    notes:"Ajvar + sambal är smakdrivarna. Kokosmjölk kan ersätta crème fraîche för asiatisk profil."
+  },
+  {
+    id:"pre7", name:"Tonkotsu Ramen", category:"Japanskt · Umami · Tidskrävande",
+    time:"8–12 tim", portions:"4 pers", source:"Världsklassiker",
+    ingredients:[
+      "1,5 kg fläskben (ryggrad/spino)","500 g fläskmage (chashu)",
+      "4 ägg (6,5 min, marinerade)","Ramen-nudlar per person",
+      "6 vitlöksklyftor, 50 g ingefära","2 msk sake, 2 msk mirin",
+      "3 msk soja (tare)","Sesamolja",
+      "Toppings: majs, nori, bambuskott, salladslök"
+    ],
+    steps:[
+      "Blanchera benen i kallt vatten, koka upp 10 min. Häll av och skölj noga.",
+      "Ny kastrull, 5 L vatten. KRAFTIGT kok (inte sjud) 4–6 h → vit krämig buljong. Fyll på vid behov.",
+      "Rosta vitlök + ingefära i torr panna tills brynt. Tillsätt sista timmen.",
+      "Chashu: rulla fläskmagen tätt, bind med snöre. Bryn runtom. Sjud i soja/mirin/sake/socker 2 h. Kylen.",
+      "Ägg: 6,5 min exakt, kylbad, skala. Marinad soja+mirin+vatten 1:1:1, minst 4 h.",
+      "Sila buljongen. Smaka av med tare. Koka nudlar separat.",
+      "Bygg: nudlar → het buljong → chashu-skivor → ägg halverat → toppings → droppar sesamolja."
+    ],
+    notes:"Det kraftiga koket (inte sjud!) är hemligheten bakom den vita krämiga konsistensen. Förbered i omgångar — buljong fryser bra."
+  },
+  {
+    id:"pre8", name:"Argentinsk Asado & Chimichurri", category:"Grill · LCHF · Klassiker",
+    time:"45 min", portions:"4 pers", source:"Världsklassiker · LCHF",
+    ingredients:[
+      "1,2 kg entrecôte, flankstek eller asado de tira","Grovt havssalt",
+      "Chimichurri: 1 knippe plattbladig persilja, finhackad",
+      "4 vitlöksklyftor, finhackade","1 tsk torkad oregano",
+      "1 tsk chiliflakes","3 msk rödvinsvinäger","8 msk extra virgin olivolja",
+      "Salt och svartpeppar"
+    ],
+    steps:[
+      "Chimichurri: blanda allt, låt vila minimum 30 min (helst 2–3 h) i rumstemperatur.",
+      "Köttet 30 min i rumstemperatur. Torka av. Grovt havssalt — ingenting annat.",
+      "Maxvärme. 4–5 min per sida för medium rare (55–58°C kärntemp). Termometer obligatorisk.",
+      "Vila under folie 5–10 min. Skär MOT fibrerna.",
+      "Upp på fat. Rikligt med chimichurri."
+    ],
+    notes:"Enkelheten är poängen. Bra kött + eld + chimichurri. LCHF-perfekt. Resterande chimichurri håller 1 vecka i kylen."
+  }
+];
+
+let ingredients=[],savedRecipes=[],imageBase64=null,currentRecipes=[];
+
+function initStorage(){
+  try{
+    const stored=JSON.parse(localStorage.getItem('lacuisine_v2')||'[]');
+    const aiOnly=stored.filter(r=>!r.id.startsWith('pre'));
+    savedRecipes=[...PREDEFINED,...aiOnly];
+  }catch(e){savedRecipes=[...PREDEFINED];}
+}
+function persist(){
+  try{localStorage.setItem('lacuisine_v2',JSON.stringify(savedRecipes));}catch(e){}
+}
+initStorage();
+
+function showTab(name){
+  ['scan','recipes','saved'].forEach(t=>{
+    document.getElementById('pane-'+t).classList.toggle('active',t===name);
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+  });
+  if(name==='saved')renderSaved();
+}
+function retake(){
+  document.getElementById('previewImg').style.display='none';
+  document.getElementById('cameraBox').style.display='block';
+  document.getElementById('retakeBtn').style.display='none';
+  document.getElementById('ingWrap').style.display='none';
+  document.getElementById('findBtn').classList.remove('show');
+  document.getElementById('statusBar').className='status-bar';
+  ingredients=[];imageBase64=null;
+  document.getElementById('fileInput').value='';
+}
+function handleImage(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(ev){
+    const dataUrl=ev.target.result;
+    imageBase64=dataUrl.split(',')[1];
+    const img=document.getElementById('previewImg');
+    img.src=dataUrl;img.style.display='block';
+    document.getElementById('cameraBox').style.display='none';
+    document.getElementById('retakeBtn').style.display='block';
+    await analyzeImage();
+  };
+  reader.readAsDataURL(file);
+}
+function setStatus(type,text){
+  const bar=document.getElementById('statusBar');
+  bar.className='status-bar '+type;
+  document.getElementById('statusSpinner').style.display=type==='loading'?'inline-block':'none';
+  document.getElementById('statusText').textContent=text;
+}
+async function analyzeImage(){
+  setStatus('loading','Analyserar råvaror...');
+  document.getElementById('ingWrap').style.display='none';
+  document.getElementById('findBtn').classList.remove('show');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imageBase64}},
+          {type:'text',text:'Lista alla matvaror och ingredienser du ser i bilden. Svara ENBART med en JSON-array av strängar på svenska, ex ["ägg","smör"]. Bara JSON.'}
+        ]}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.find(b=>b.type==='text')?.text||'[]';
+    try{ingredients=JSON.parse(text.replace(/```json|```/g,'').trim());}catch{ingredients=[];}
+    document.getElementById('statusBar').className='status-bar';
+    renderIngredients();
+    document.getElementById('ingWrap').style.display='block';
+    document.getElementById('findBtn').classList.add('show');
+  }catch(err){
+    setStatus('error','Kunde inte analysera bilden. Kontrollera anslutningen.');
+    document.getElementById('ingWrap').style.display='block';
+    renderIngredients();
+    document.getElementById('findBtn').classList.add('show');
+  }
+}
+function renderIngredients(){
+  document.getElementById('ingTags').innerHTML=ingredients.map((ing,i)=>
+    `<div class="ing-tag">${ing}<button onclick="removeIng(${i})" aria-label="Ta bort">×</button></div>`
+  ).join('');
+}
+function removeIng(i){ingredients.splice(i,1);renderIngredients();}
+function addIngredient(){
+  const input=document.getElementById('ingInput');
+  const val=input.value.trim();
+  if(val){ingredients.push(val);input.value='';renderIngredients();}
+}
+async function findRecipes(){
+  if(!ingredients.length){alert('Inga råvaror identifierade.');return;}
+  showTab('recipes');
+  const container=document.getElementById('recipesContainer');
+  container.innerHTML='<div class="empty-state"><span class="spinner"></span><p style="margin-top:16px">Komponerar alternativ...</p></div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,
+        messages:[{role:'user',content:`Du är en stjärnkockens assistent med höga krav. Jag har dessa råvaror: ${ingredients.join(', ')}. Föreslå 4 recept — gärna med franska eller klassiska tekniker. Var specifik och ambitiös. Svara ENBART med JSON utan backticks:\n{"recipes":[{"name":"Receptnamn","time":"25 min","portions":"2 pers","match":"hög","steps":["Steg 1","Steg 2","Steg 3","Steg 4"],"missing":["saknad"]}]}`}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.find(b=>b.type==='text')?.text||'{}';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    currentRecipes=parsed.recipes||[];
+    renderRecipes();
+  }catch(err){
+    container.innerHTML='<div class="empty-state"><i class="ti ti-alert-circle"></i><p>Förbindelsen bröts.<br>Försök igen.</p></div>';
+  }
+}
+function renderRecipes(){
+  const container=document.getElementById('recipesContainer');
+  if(!currentRecipes.length){container.innerHTML='<div class="empty-state"><p>Inga resultat.</p></div>';return;}
+  container.innerHTML='<div class="recipe-cards">'+currentRecipes.map((r,i)=>`
+    <div class="recipe-card" id="rcard-${i}">
+      <div class="recipe-card-header" onclick="toggleRecipe(${i})">
+        <div style="flex:1">
+          <div class="recipe-name">${r.name}</div>
+          <div class="recipe-meta">
+            <span class="recipe-badge"><i class="ti ti-clock"></i>${r.time||'–'}</span>
+            <span class="recipe-badge"><i class="ti ti-users"></i>${r.portions||'–'}</span>
+          </div>
+        </div>
+        <span class="match-pill ${r.match==='hög'?'match-high':'match-mid'}">${r.match==='hög'?'✦ Complet':'◦ Partiel'}</span>
+      </div>
+      <div class="recipe-body" id="rbody-${i}">
+        <ol class="recipe-steps">${(r.steps||[]).map(s=>`<li>${s}</li>`).join('')}</ol>
+        ${r.missing&&r.missing.length?`<div class="missing-label">Manquant</div><div class="recipe-missing">${r.missing.map(m=>`<span class="missing-tag">${m}</span>`).join('')}</div>`:''}
+        <button class="save-btn" id="savebtn-${i}" onclick="saveAIRecipe(${i})">
+          <i class="ti ti-bookmark"></i>&nbsp;&nbsp;Arkivera i répertoire
+        </button>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+function toggleRecipe(i){document.getElementById('rbody-'+i).classList.toggle('open');}
+function saveAIRecipe(i){
+  const r=currentRecipes[i];
+  const newR={id:'ai_'+Date.now(),name:r.name,category:'AI · Scanner',time:r.time,portions:r.portions,source:'Komposit '+new Date().toLocaleDateString('sv-SE'),ingredients:[],steps:r.steps||[],notes:r.missing&&r.missing.length?'Saknades: '+r.missing.join(', '):''};
+  if(!savedRecipes.find(s=>s.name===r.name)){savedRecipes.push(newR);persist();}
+  const btn=document.getElementById('savebtn-'+i);
+  btn.className='save-btn saved';
+  btn.innerHTML='<i class="ti ti-check"></i>&nbsp;&nbsp;Arkiverat';
+}
+function renderSaved(){
+  const container=document.getElementById('savedContainer');
+  if(!savedRecipes.length){container.innerHTML='<div class="empty-state"><i class="ti ti-book"></i><p>Répertoire vide.</p></div>';return;}
+  container.innerHTML='<div class="saved-list">'+savedRecipes.map((r,i)=>`
+    <div class="saved-item" id="sitem-${i}">
+      <div class="saved-item-header" onclick="toggleSaved(${i})">
+        <div class="saved-icon-wrap"><i class="ti ${r.id.startsWith('ai')?'ti-wand':'ti-bookmark-filled'}"></i></div>
+        <div style="flex:1">
+          <div class="saved-name">${r.name}</div>
+          <div class="saved-meta">
+            <span>${r.category||''}</span>
+            <span class="saved-meta-dot">·</span>
+            <span>${r.time||''}</span>
+            <span class="saved-meta-dot">·</span>
+            <span>${r.portions||''}</span>
+          </div>
+        </div>
+        ${r.id.startsWith('ai')?`<button class="saved-del" onclick="deleteSaved(event,${i})" aria-label="Ta bort"><i class="ti ti-x"></i></button>`:''}
+      </div>
+      <div class="saved-detail" id="sdetail-${i}">
+        <span class="cat-pill">${r.source||''}</span>
+        ${r.ingredients&&r.ingredients.length?`<div class="detail-section"><div class="detail-label">Mise en place</div>${r.ingredients.map(ing=>`<div class="detail-ing">${ing}</div>`).join('')}</div>`:''}
+        ${r.steps&&r.steps.length?`<div class="detail-section"><div class="detail-label">Méthode</div>${r.steps.map((s,si)=>`<div class="detail-step"><span class="detail-step-num">${si+1}</span>${s}</div>`).join('')}</div>`:''}
+        ${r.notes?`<div class="detail-section"><div class="detail-label">Notes</div><div class="detail-notes">${r.notes}</div></div>`:''}
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+function toggleSaved(i){document.getElementById('sdetail-'+i).classList.toggle('open');}
+function deleteSaved(e,i){
+  e.stopPropagation();
+  if(savedRecipes[i].id.startsWith('pre'))return;
+  if(confirm('Radera '+savedRecipes[i].name+'?')){savedRecipes.splice(i,1);persist();renderSaved();}
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

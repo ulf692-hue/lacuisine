@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0f0e0c"/>
+  <rect x="0" y="0" width="512" height="512" fill="#111009"/>
+  <!-- subtle noise texture via rect pattern -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#c8922a" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#c8922a" stroke-width="0.5" opacity="0.2"/>
+  <!-- Chef hat simplified as toque -->
+  <ellipse cx="256" cy="290" rx="90" ry="18" fill="#c8922a" opacity="0.95"/>
+  <rect x="175" y="230" width="162" height="65" rx="4" fill="#c8922a" opacity="0.95"/>
+  <!-- toque top puff -->
+  <ellipse cx="220" cy="210" rx="38" ry="42" fill="#e8b84b"/>
+  <ellipse cx="256" cy="200" rx="42" ry="50" fill="#f0c855"/>
+  <ellipse cx="292" cy="210" rx="38" ry="42" fill="#e8b84b"/>
+  <!-- highlight on toque -->
+  <ellipse cx="248" cy="185" rx="18" ry="22" fill="white" opacity="0.08"/>
+  <!-- band line -->
+  <rect x="175" y="260" width="162" height="3" rx="1" fill="#0f0e0c" opacity="0.3"/>
+  <!-- star accent -->
+  <text x="256" y="346" font-family="serif" font-size="22" fill="#0f0e0c" text-anchor="middle" opacity="0.7">✦</text>
+</svg>
