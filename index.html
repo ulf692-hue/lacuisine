@@ -32,7 +32,7 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
 .brand-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;letter-spacing:.12em;color:var(--cream);line-height:1;}
 .brand-star{color:var(--gold);font-size:13px;letter-spacing:.3em;}
 .brand-sub{font-size:10px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;}
-.tabs{flex-shrink:0;display:flex;padding:12px 4px 10px;background:var(--ink);border-bottom:0.5px solid var(--border);overflow-x:auto;}
+.tabs{flex-shrink:0;display:flex;padding:12px 4px 10px;background:var(--ink);border-bottom:0.5px solid var(--border);}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex:1;min-width:0;padding:7px 2px;background:none;border:none;font-family:'Jost',sans-serif;font-size:8.5px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;white-space:nowrap;}
 .tab::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--gold);transition:width .3s;}
@@ -47,44 +47,47 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
 .sec-label{font-size:9px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
 
 /* CAMERA */
-.camera-box{border:1px solid var(--border);border-radius:4px;padding:44px 20px;text-align:center;cursor:pointer;background:var(--ink2);margin-bottom:16px;position:relative;overflow:hidden;}
+.camera-box{border:1px solid var(--border);border-radius:4px;padding:36px 20px;text-align:center;cursor:pointer;background:var(--ink2);margin-bottom:12px;position:relative;overflow:hidden;}
 .camera-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,0.06),transparent 70%);pointer-events:none;}
 .camera-box:active{border-color:var(--gold2);}
-.cam-icon{font-size:36px;color:var(--gold);display:block;margin-bottom:14px;opacity:.7;}
-.cam-label{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--cream);letter-spacing:.06em;}
-.cam-sub{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.cam-icon{font-size:32px;color:var(--gold);display:block;margin-bottom:10px;opacity:.7;}
+.cam-label{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--cream);letter-spacing:.06em;}
+.cam-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;}
 #fileInput{display:none;}
-.preview-img{width:100%;border-radius:4px;display:none;margin-bottom:16px;object-fit:cover;max-height:240px;border:0.5px solid var(--border);}
-.retake-btn{width:100%;padding:11px;background:transparent;color:var(--muted);border:0.5px solid rgba(255,255,255,0.1);border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.1em;cursor:pointer;margin-bottom:16px;display:none;}
-.status-bar{padding:12px 16px;border-radius:4px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:14px;}
+
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.preview-thumb{position:relative;border-radius:4px;overflow:hidden;border:0.5px solid var(--border);}
+.preview-thumb img{width:100%;height:100px;object-fit:cover;display:block;}
+.preview-thumb .analyzing{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;}
+.preview-thumb .done-check{position:absolute;top:6px;right:6px;background:var(--green);color:var(--ink);font-size:12px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.preview-thumb .del-btn{position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+
+.add-more-btn{width:100%;padding:11px;background:transparent;border:0.5px solid var(--border);border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.add-more-btn:active{border-color:var(--border2);color:var(--cream);}
+
+.status-bar{padding:12px 16px;border-radius:4px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:12px;}
 .status-bar.loading{background:var(--ink3);color:var(--muted);display:flex;border:0.5px solid var(--border);}
 .status-bar.error{background:var(--red-bg);color:var(--red);display:flex;border:0.5px solid rgba(192,57,43,0.3);}
-.api-notice{background:var(--ink3);border:0.5px solid var(--border);border-radius:4px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
-.api-notice a{color:var(--gold);text-decoration:none;}
 
-/* INPUTS */
-.add-row{display:flex;gap:8px;margin-bottom:16px;}
+.ing-wrap{margin-bottom:14px;}
+.ing-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:8px;}
+.ing-tag{font-size:11px;padding:5px 11px;background:var(--ink3);border:0.5px solid var(--border);border-radius:2px;color:var(--cream2);display:flex;align-items:center;gap:5px;}
+.ing-tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;}
+.add-row{display:flex;gap:8px;margin-bottom:14px;}
 .add-row input{flex:1;padding:11px 14px;border:0.5px solid var(--border);border-radius:4px;font-family:'Jost',sans-serif;font-size:13px;background:var(--ink2);color:var(--cream);outline:none;}
 .add-row input::placeholder{color:var(--muted2);}
 .add-row input:focus{border-color:var(--border2);}
 .add-row button{padding:11px 16px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
-.add-row button:active{opacity:.8;}
-.btn-main{width:100%;padding:15px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;}
+.btn-main{width:100%;padding:15px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-main:active{opacity:.8;}
-.btn-main.show{display:flex;}
-
-/* INGREDIENT TAGS */
-.ing-wrap{margin-bottom:16px;display:none;}
-.ing-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.ing-tag{font-size:11px;padding:5px 12px;background:var(--ink3);border:0.5px solid var(--border);border-radius:2px;color:var(--cream2);display:flex;align-items:center;gap:6px;}
-.ing-tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;}
+.btn-main.hidden{display:none;}
 
 /* PANTRY */
 .pantry-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
 .pantry-tag{font-size:12px;padding:6px 12px;border-radius:3px;display:flex;align-items:center;gap:6px;background:var(--green-bg);border:0.5px solid rgba(45,106,79,0.4);color:var(--green);}
 .pantry-tag button{background:none;border:none;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:0;opacity:.6;}
 
-/* SHOPPING LIST */
+/* SHOPPING */
 .shop-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
 .shop-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;}
 .shop-item.checked{opacity:.45;}
@@ -96,9 +99,9 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
 .shop-src{font-size:10px;color:var(--muted);}
 .shop-del{background:none;border:none;color:var(--muted2);font-size:16px;cursor:pointer;padding:4px;opacity:.5;}
 
-/* RÉPERTOIRE */
+/* RECEPT */
 .saved-list{display:flex;flex-direction:column;gap:10px;}
-.saved-item{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color .2s;}
+.saved-item{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;}
 .saved-item.open-item{border-color:var(--border2);}
 .saved-item-header{padding:14px 16px 12px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
 .saved-item-header:active{background:rgba(200,146,42,0.04);}
@@ -124,7 +127,7 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
 .d-ing{font-size:13px;color:var(--cream2);margin-bottom:5px;padding-left:14px;position:relative;line-height:1.5;display:flex;align-items:center;gap:8px;}
 .d-ing::before{content:"·";position:absolute;left:0;color:var(--gold);}
 .d-ing .qty{color:var(--gold2);font-weight:500;}
-.d-ing-status{width:18px;height:18px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;margin-left:auto;}
+.d-ing-status{width:18px;height:18px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;margin-left:auto;}
 .ing-have{background:var(--green-bg);color:var(--green);}
 .ing-miss{background:var(--red-bg);color:var(--red);}
 .d-step{font-size:13px;color:var(--cream2);margin-bottom:9px;padding-left:24px;position:relative;line-height:1.6;}
@@ -189,12 +192,17 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
       <div class="camera-box" id="cameraBox" onclick="document.getElementById('fileInput').click()">
         <i class="ti ti-aperture cam-icon"></i>
         <div class="cam-label">Fotografera ditt skafferi</div>
-        <div class="cam-sub">Kyl, skafferi eller råvaror — AI identifierar och föreslår recept</div>
+        <div class="cam-sub">Kyl, skafferi eller råvaror</div>
       </div>
       <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleImage(event)">
-      <img id="previewImg" class="preview-img" alt="Råvaror">
-      <button class="retake-btn" id="retakeBtn" onclick="retake()"><i class="ti ti-refresh"></i> &nbsp;Ta ny bild</button>
+
+      <div id="previewGrid" class="preview-grid" style="display:none"></div>
+      <button class="add-more-btn" id="addMoreBtn" style="display:none" onclick="document.getElementById('fileInput').click()">
+        <i class="ti ti-plus"></i> Lägg till fler bilder
+      </button>
+
       <div class="status-bar" id="statusBar"><span class="spinner" id="statusSpinner"></span><span id="statusText"></span></div>
+
       <div class="ing-wrap" id="ingWrap">
         <div class="sec-label">Identifierade råvaror</div>
         <div class="ing-tags" id="ingTags"></div>
@@ -203,15 +211,10 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
           <button onclick="addIngredient()">+ Lägg till</button>
         </div>
       </div>
-      <button class="btn-main" id="findBtn" onclick="findRecipes()"><i class="ti ti-wand"></i>&nbsp;&nbsp;Hitta recept</button>
-      <div class="api-notice" id="apiNotice" style="display:none">
-        <strong style="color:var(--cream2)">API-nyckel saknas</strong><br>
-        Bildanalys kräver en Anthropic API-nyckel. Hämta credits på <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> och lägg in nyckeln nedan.<br><br>
-        <div class="add-row" style="margin-bottom:0">
-          <input type="text" id="apiKeyInput" placeholder="sk-ant-..." style="font-size:11px">
-          <button onclick="saveApiKey()">Spara</button>
-        </div>
-      </div>
+
+      <button class="btn-main hidden" id="findBtn" onclick="goToRecipes()">
+        <i class="ti ti-chef-hat"></i>&nbsp;&nbsp;Visa matchande recept
+      </button>
     </div>
 
     <!-- SKAFFERI -->
@@ -249,7 +252,6 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
   <div class="bottom-safe"></div>
 </div>
 
-<!-- OVERLAY -->
 <div class="overlay" id="recipeOverlay">
   <div class="overlay-hdr">
     <button class="overlay-back" onclick="closeOverlay()"><i class="ti ti-arrow-left"></i></button>
@@ -259,6 +261,8 @@ html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',s
 </div>
 
 <script>
+const API_KEY = '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';
+
 const RECIPES = [
   {id:"pre1",name:"Boeuf Bourguignon",category:"Kött · Longue cuisson",time:"3,5 tim",basePortions:6,source:"Michelin-inspirerad · Maj 2025",
    ingredients:[{qty:1150,unit:"g",text:"högrev, 5 cm kuber"},{qty:280,unit:"g",text:"rökt sidfläsk (lardons)"},{qty:60,unit:"g",text:"osaltat smör"},{qty:30,unit:"g",text:"smör till montering"},{qty:2,unit:"msk",text:"neutral olja"},{qty:200,unit:"g",text:"gul lök"},{qty:150,unit:"g",text:"morot"},{qty:80,unit:"g",text:"selleri"},{qty:5,unit:"st",text:"vitlöksklyftor"},{qty:2,unit:"msk",text:"tomatpuré"},{qty:700,unit:"ml",text:"pinot noir / bourgogne"},{qty:350,unit:"ml",text:"kalvfond"},{scalable:false,text:"timjan, lagerblad"},{qty:1,unit:"tsk",text:"ancho chilipulver"},{qty:300,unit:"g",text:"kantareller"},{qty:250,unit:"g",text:"syltlök"},{qty:1,unit:"tsk",text:"dijonsenap"},{scalable:false,text:"salt, svartpeppar"}],
@@ -294,7 +298,7 @@ const RECIPES = [
    notes:"Bra kött + eld + chimichurri. Inget mer."}
 ];
 
-const INSPIRATION = [
+const INSPIRATION=[
   {name:"Beef Wellington",origin:"England",flag:"🇬🇧",diff:3,tags:["Oxfilé","Duxelles","Smördeg"]},
   {name:"Coq au Vin",origin:"Frankrike",flag:"🇫🇷",diff:2,tags:["Kyckling","Bourgogne","Lardons"]},
   {name:"Duck Confit",origin:"Frankrike",flag:"🇫🇷",diff:2,tags:["Anka","Ankfett","Långkok"]},
@@ -313,145 +317,142 @@ const INSPIRATION = [
   {name:"Bánh Mì",origin:"Vietnam",flag:"🇻🇳",diff:1,tags:["Baguette","Picklade grönsaker","Pâté"]},
 ];
 
-let pantry=[], shopItems=[], portionScales={}, ingredients=[], imageBase64=null, currentRecipes=[], apiKey='';
+let pantry=[],shopItems=[],portionScales={},ingredients=[],images=[],analyzingCount=0;
+try{pantry=JSON.parse(localStorage.getItem('lc_pantry')||'[]');}catch(e){pantry=[];}
+try{shopItems=JSON.parse(localStorage.getItem('lc_shop')||'[]');}catch(e){shopItems=[];}
+RECIPES.forEach(r=>{portionScales[r.id]=r.basePortions;});
 
-function load(){
-  try{ pantry=JSON.parse(localStorage.getItem('lc_pantry')||'[]'); }catch(e){ pantry=[]; }
-  try{ shopItems=JSON.parse(localStorage.getItem('lc_shop')||'[]'); }catch(e){ shopItems=[]; }
-  try{ apiKey=localStorage.getItem('lc_apikey')||''; }catch(e){ apiKey=''; }
-  RECIPES.forEach(r=>{ portionScales[r.id]=r.basePortions; });
-}
-function savePantry(){ try{ localStorage.setItem('lc_pantry',JSON.stringify(pantry)); }catch(e){} }
-function saveShop(){ try{ localStorage.setItem('lc_shop',JSON.stringify(shopItems)); }catch(e){} }
-function saveApiKey(){ apiKey=document.getElementById("apiKeyInput").value.trim(); if(!apiKey)return; try{ localStorage.setItem("lc_apikey",apiKey); }catch(e){} document.getElementById("apiNotice").style.display="none"; alert("Nyckel sparad! Tar ny bild..."); if(imageBase64){ analyzeImage(); } }
-load();
+function savePantry(){try{localStorage.setItem('lc_pantry',JSON.stringify(pantry));}catch(e){}}
+function saveShop(){try{localStorage.setItem('lc_shop',JSON.stringify(shopItems));}catch(e){}}
 
-function showTab(name){
+function showTab(n){
   ['scan','pantry','shop','saved','insp'].forEach(t=>{
-    document.getElementById('pane-'+t).classList.toggle('active',t===name);
-    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+    document.getElementById('pane-'+t).classList.toggle('active',t===n);
+    document.getElementById('tab-'+t).classList.toggle('active',t===n);
   });
-  if(name==='pantry') renderPantry();
-  if(name==='shop') renderShop();
-  if(name==='saved') renderSaved();
-  if(name==='insp') renderInspiration();
+  if(n==='pantry')renderPantry();
+  if(n==='shop')renderShop();
+  if(n==='saved')renderSaved();
+  if(n==='insp')renderInspiration();
   updateShopBadge();
 }
 
-// SCAN
-function retake(){
-  document.getElementById('previewImg').style.display='none';
-  document.getElementById('cameraBox').style.display='block';
-  document.getElementById('retakeBtn').style.display='none';
-  document.getElementById('ingWrap').style.display='none';
-  document.getElementById('findBtn').classList.remove('show');
-  document.getElementById('statusBar').className='status-bar';
-  document.getElementById('apiNotice').style.display='none';
-  ingredients=[];imageBase64=null;
-  document.getElementById('fileInput').value='';
-}
+// ── SCAN / MULTI-IMAGE ────────────────────────────────────────
 function handleImage(e){
   const file=e.target.files[0];if(!file)return;
+  const id='img_'+Date.now();
   const reader=new FileReader();
   reader.onload=async function(ev){
     const dataUrl=ev.target.result;
-    imageBase64=dataUrl.split(',')[1];
-    const img=document.getElementById('previewImg');
-    img.src=dataUrl;img.style.display='block';
+    const b64=dataUrl.split(',')[1];
+    images.push({id,b64,done:false,thumbUrl:dataUrl});
     document.getElementById('cameraBox').style.display='none';
-    document.getElementById('retakeBtn').style.display='block';
-    if(apiKey){ await analyzeImage(); }
-    else{
-      document.getElementById('apiNotice').style.display='block';
-      document.getElementById('ingWrap').style.display='block';
-      document.getElementById('findBtn').classList.add('show');
-      renderIngredients();
-    }
+    renderPreviews();
+    document.getElementById('addMoreBtn').style.display='flex';
+    document.getElementById('ingWrap').style.display='block';
+    await analyzeOneImage(id,b64);
   };
   reader.readAsDataURL(file);
+  e.target.value='';
 }
-function setStatus(type,text){
-  const bar=document.getElementById('statusBar');
-  bar.className='status-bar '+type;
-  document.getElementById('statusSpinner').style.display=type==='loading'?'inline-block':'none';
-  document.getElementById('statusText').textContent=text;
+
+function renderPreviews(){
+  const grid=document.getElementById('previewGrid');
+  grid.style.display=images.length?'grid':'none';
+  grid.innerHTML=images.map(img=>`
+    <div class="preview-thumb" id="thumb-${img.id}">
+      <img src="${img.thumbUrl}">
+      ${img.done?'<div class="done-check">✓</div>':'<div class="analyzing"><span class="spinner"></span></div>'}
+      <button class="del-btn" onclick="removeImage('${img.id}')">×</button>
+    </div>`).join('');
 }
-async function analyzeImage(){
-  setStatus('loading','Analyserar bild...');
-  document.getElementById('ingWrap').style.display='none';
-  document.getElementById('findBtn').classList.remove('show');
+
+function removeImage(id){
+  images=images.filter(i=>i.id!==id);
+  renderPreviews();
+  if(!images.length){
+    document.getElementById('cameraBox').style.display='block';
+    document.getElementById('addMoreBtn').style.display='none';
+  }
+}
+
+async function analyzeOneImage(id,b64){
+  analyzingCount++;
+  setStatus('loading','Analyserar bild '+(images.findIndex(i=>i.id===id)+1)+' av '+images.length+'...');
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
         messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:imageBase64}},
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
           {type:'text',text:'Lista alla matvaror och ingredienser du ser i bilden. Svara ENBART med en JSON-array av strängar på svenska. Bara JSON.'}
         ]}]
       })
     });
     const data=await res.json();
     const text=data.content?.find(b=>b.type==='text')?.text||'[]';
-    try{ ingredients=JSON.parse(text.replace(/```json|```/g,'').trim()); }catch{ ingredients=[]; }
-    document.getElementById('statusBar').className='status-bar';
-    // auto-add to pantry
-    ingredients.forEach(ing=>{
-      if(!pantry.find(p=>p.name.toLowerCase()===ing.toLowerCase())){
-        pantry.push({name:ing,id:'p_'+Date.now()+Math.random()});
-      }
+    let newIngs=[];
+    try{newIngs=JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){}
+    newIngs.forEach(ing=>{
+      if(!ingredients.find(i=>i.toLowerCase()===ing.toLowerCase())) ingredients.push(ing);
+      if(!pantry.find(p=>p.name.toLowerCase()===ing.toLowerCase())) pantry.push({name:ing,id:'p_'+Date.now()+Math.random()});
     });
     savePantry();
+    const img=images.find(i=>i.id===id);if(img)img.done=true;
+    renderPreviews();
     renderIngredients();
-    document.getElementById('ingWrap').style.display='block';
-    document.getElementById('findBtn').classList.add('show');
   }catch(err){
-    setStatus('error','Kunde inte analysera. Kontrollera API-nyckeln.');
-    document.getElementById('apiNotice').style.display='block';
-    document.getElementById('ingWrap').style.display='block';
-    document.getElementById('findBtn').classList.add('show');
+    setStatus('error','Kunde inte analysera bilden.');
+  }
+  analyzingCount--;
+  if(analyzingCount===0){
+    document.getElementById('statusBar').className='status-bar';
+    document.getElementById('findBtn').classList.remove('hidden');
   }
 }
+
+function setStatus(type,text){
+  const bar=document.getElementById('statusBar');
+  bar.className='status-bar '+type;
+  document.getElementById('statusSpinner').style.display=type==='loading'?'inline-block':'none';
+  document.getElementById('statusText').textContent=text;
+}
+
 function renderIngredients(){
   document.getElementById('ingTags').innerHTML=ingredients.map((ing,i)=>
     `<div class="ing-tag">${ing}<button onclick="removeIng(${i})">×</button></div>`
   ).join('');
 }
-function removeIng(i){ ingredients.splice(i,1); renderIngredients(); }
+function removeIng(i){ingredients.splice(i,1);renderIngredients();}
 function addIngredient(){
   const input=document.getElementById('ingInput');
   const val=input.value.trim();
-  if(val){ ingredients.push(val); input.value=''; renderIngredients(); }
+  if(val){ingredients.push(val);input.value='';renderIngredients();}
 }
-async function findRecipes(){
-  if(!ingredients.length){ alert('Inga råvaror.'); return; }
-  if(!apiKey){ document.getElementById('apiNotice').style.display='block'; return; }
-  showTab('saved');
-  // show as search
-}
+function goToRecipes(){showTab('saved');}
 
-// PANTRY
+// ── PANTRY ────────────────────────────────────────────────────
 function addPantry(){
   const input=document.getElementById('pantryInput');
   const val=input.value.trim();
   if(!val)return;
   pantry.push({name:val,id:'p_'+Date.now()});
-  savePantry(); input.value=''; renderPantry();
-  if(document.getElementById('pane-saved').classList.contains('active')) renderSaved();
+  savePantry();input.value='';renderPantry();
 }
-function removePantry(id){ pantry=pantry.filter(p=>p.id!==id); savePantry(); renderPantry(); }
-function clearPantry(){ if(confirm('Rensa hela skafferiet?')){ pantry=[]; savePantry(); renderPantry(); } }
+function removePantry(id){pantry=pantry.filter(p=>p.id!==id);savePantry();renderPantry();}
+function clearPantry(){if(confirm('Rensa hela skafferiet?')){pantry=[];savePantry();renderPantry();}}
 function hasPantryItem(text){
   const t=text.toLowerCase();
   return pantry.some(p=>t.includes(p.name.toLowerCase())||p.name.toLowerCase().includes(t.split(' ')[0]));
 }
 function renderPantry(){
   const grid=document.getElementById('pantryGrid');
-  if(!pantry.length){ grid.innerHTML='<div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0">Lägg till vad du har hemma — recept visar vad som saknas.</div>'; return; }
+  if(!pantry.length){grid.innerHTML='<div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0">Lägg till vad du har hemma.</div>';return;}
   grid.innerHTML=pantry.map(p=>`<div class="pantry-tag">${p.name}<button onclick="removePantry('${p.id}')">×</button></div>`).join('');
 }
 
-// SHOP
+// ── SHOP ──────────────────────────────────────────────────────
 function addShopItem(name,source){
   const input=document.getElementById('shopInput');
   const val=name||input.value.trim();
@@ -460,16 +461,16 @@ function addShopItem(name,source){
     shopItems.push({name:val,source:source||'Manuellt',checked:false,id:'s_'+Date.now()});
     saveShop();
   }
-  if(!name) input.value='';
-  renderShop(); updateShopBadge();
+  if(!name)input.value='';
+  renderShop();updateShopBadge();
 }
-function toggleShop(id){ const item=shopItems.find(s=>s.id===id); if(item){ item.checked=!item.checked; saveShop(); renderShop(); updateShopBadge(); } }
-function removeShopItem(id){ shopItems=shopItems.filter(s=>s.id!==id); saveShop(); renderShop(); updateShopBadge(); }
+function toggleShop(id){const item=shopItems.find(s=>s.id===id);if(item){item.checked=!item.checked;saveShop();renderShop();updateShopBadge();}}
+function removeShopItem(id){shopItems=shopItems.filter(s=>s.id!==id);saveShop();renderShop();updateShopBadge();}
 function clearChecked(){
   shopItems.filter(s=>s.checked).forEach(s=>{
-    if(!pantry.find(p=>p.name.toLowerCase()===s.name.toLowerCase())) pantry.push({name:s.name,id:'p_'+Date.now()});
+    if(!pantry.find(p=>p.name.toLowerCase()===s.name.toLowerCase()))pantry.push({name:s.name,id:'p_'+Date.now()});
   });
-  savePantry(); shopItems=shopItems.filter(s=>!s.checked); saveShop(); renderShop(); renderPantry(); updateShopBadge();
+  savePantry();shopItems=shopItems.filter(s=>!s.checked);saveShop();renderShop();renderPantry();updateShopBadge();
 }
 function updateShopBadge(){
   const count=shopItems.filter(s=>!s.checked).length;
@@ -481,7 +482,7 @@ function renderShop(){
   const list=document.getElementById('shopList');
   const clearBtn=document.getElementById('clearCheckedBtn');
   clearBtn.style.display=shopItems.some(s=>s.checked)?'block':'none';
-  if(!shopItems.length){ list.innerHTML='<div class="empty" style="padding:30px 0"><i class="ti ti-shopping-cart"></i><p>Listan är tom.<br>Öppna ett recept och lägg till det som saknas.</p></div>'; return; }
+  if(!shopItems.length){list.innerHTML='<div class="empty" style="padding:30px 0"><i class="ti ti-shopping-cart"></i><p>Listan är tom.</p></div>';return;}
   const sorted=[...shopItems.filter(s=>!s.checked),...shopItems.filter(s=>s.checked)];
   list.innerHTML=sorted.map(s=>`
     <div class="shop-item ${s.checked?'checked':''}">
@@ -491,7 +492,7 @@ function renderShop(){
     </div>`).join('');
 }
 
-// RÉPERTOIRE
+// ── RECEPT ────────────────────────────────────────────────────
 function fmtQty(qty,scale,base){
   const v=qty*scale/base;
   if(v>=100)return Math.round(v).toString();
@@ -500,14 +501,14 @@ function fmtQty(qty,scale,base){
   for(const[f,s]of fracs)if(Math.abs(v-f)<0.05)return s;
   return(Math.round(v*100)/100).toString().replace('.',',');
 }
-function getStatus(r){ const ings=r.ingredients.filter(i=>i.qty); if(!ings.length||!pantry.length)return'none'; const haveCount=ings.filter(i=>hasPantryItem(i.text)).length; if(haveCount===ings.length)return'all'; if(haveCount>0)return'some'; return'none'; }
-function getMissing(r){ return r.ingredients.filter(i=>i.qty&&!hasPantryItem(i.text)); }
+function getStatus(r){const ings=r.ingredients.filter(i=>i.qty);if(!ings.length||!pantry.length)return'none';const haveCount=ings.filter(i=>hasPantryItem(i.text)).length;if(haveCount===ings.length)return'all';if(haveCount>0)return'some';return'none';}
+function getMissing(r){return r.ingredients.filter(i=>i.qty&&!hasPantryItem(i.text));}
 function addMissingToShop(rid){
-  const r=RECIPES.find(x=>x.id===rid); if(!r)return;
+  const r=RECIPES.find(x=>x.id===rid);if(!r)return;
   getMissing(r).forEach(ing=>addShopItem(ing.text,r.name));
   updateShopBadge();
   const btn=document.getElementById('missing-btn-'+rid);
-  if(btn){ btn.innerHTML='<i class="ti ti-check"></i> Lagt till i inköpslistan'; btn.classList.add('green'); }
+  if(btn){btn.innerHTML='<i class="ti ti-check"></i> Lagt till i inköpslistan';btn.classList.add('green');}
 }
 function renderSaved(){
   const container=document.getElementById('savedContainer');
@@ -558,7 +559,7 @@ function changePortions(id,delta){
   if(d){d.classList.add('open');it.classList.add('open-item');}
 }
 
-// INSPIRATION
+// ── INSPIRATION ───────────────────────────────────────────────
 function renderInspiration(){
   const grid=document.getElementById('inspGrid');
   const dl=['','★','★★','★★★'];
@@ -577,14 +578,10 @@ async function openInspiration(i){
   document.getElementById('overlayTitle').textContent=dish.name;
   document.getElementById('overlayBody').innerHTML=`<div class="empty"><span class="spinner spinner-lg"></span><p style="margin-top:18px">Komponerar receptet...</p></div>`;
   document.getElementById('recipeOverlay').classList.add('open');
-  if(!apiKey){
-    document.getElementById('overlayBody').innerHTML=`<div class="empty"><i class="ti ti-key"></i><p>Lägg in din API-nyckel i Skanna-fliken för att generera recept.</p></div>`;
-    return;
-  }
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,
         messages:[{role:'user',content:`Ge mig ett komplett autentiskt recept på "${dish.name}" (${dish.origin}). Svara ENBART med JSON utan backticks:\n{"time":"X tim","portions":"4 pers","intro":"En kort mening","ingredients":["600g ingrediens"],"steps":["Steg 1","Steg 2"],"chefnote":"Tips"}`}]
       })
@@ -611,10 +608,10 @@ async function openInspiration(i){
     document.getElementById('overlayBody').innerHTML='<div class="empty"><i class="ti ti-alert-circle"></i><p>Kunde inte hämta receptet.<br>Försök igen.</p></div>';
   }
 }
-function closeOverlay(){ document.getElementById('recipeOverlay').classList.remove('open'); }
+function closeOverlay(){document.getElementById('recipeOverlay').classList.remove('open');}
 
-renderPantry(); updateShopBadge();
-if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+renderPantry();updateShopBadge();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 </script>
 </body>
 </html>
