@@ -1,1 +1,557 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0e0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Cuisine">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>La Cuisine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --ink:#0f0e0c;--ink2:#1a1814;--ink3:#252320;
+  --gold:#c8922a;--gold2:#e8b84b;--gold-dim:rgba(200,146,42,0.15);
+  --cream:#f5f0e6;--cream2:#e8e0d0;--muted:#7a7568;--muted2:#5a544a;
+  --border:rgba(200,146,42,0.18);--border2:rgba(200,146,42,0.35);
+  --red-bg:rgba(192,57,43,0.12);--red:#e57368;
+  --green-bg:rgba(45,106,79,0.12);--green:#6dbf9c;
+}
+html,body{height:100%;overflow:hidden;background:var(--ink);font-family:'Jost',sans-serif;color:var(--cream);}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;background:var(--ink);overflow:hidden;}
+.header{flex-shrink:0;padding:calc(env(safe-area-inset-top,0px)+18px) 20px 0;background:var(--ink);}
+.header-rule{width:100%;height:0.5px;background:var(--border);margin-top:14px;}
+.brand{display:flex;align-items:baseline;gap:10px;margin-bottom:3px;}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;letter-spacing:.12em;color:var(--cream);line-height:1;}
+.brand-star{color:var(--gold);font-size:13px;letter-spacing:.3em;}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;}
+.tabs{flex-shrink:0;display:flex;padding:12px 8px 10px;background:var(--ink);border-bottom:0.5px solid var(--border);overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:0;padding:7px 4px;background:none;border:none;font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;white-space:nowrap;}
+.tab::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--gold);transition:width .3s;}
+.tab.active{color:var(--gold);}
+.tab.active::after{width:70%;}
+.tab i{font-size:15px;}
+.tab-badge{background:var(--gold);color:var(--ink);font-size:8px;font-weight:500;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center;line-height:14px;}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.pane{display:none;padding:16px 20px 100px;}
+.pane.active{display:block;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sec-label{font-size:9px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+
+/* INPUTS */
+.add-row{display:flex;gap:8px;margin-bottom:16px;}
+.add-row input{flex:1;padding:11px 14px;border:0.5px solid var(--border);border-radius:4px;font-family:'Jost',sans-serif;font-size:13px;background:var(--ink2);color:var(--cream);outline:none;}
+.add-row input::placeholder{color:var(--muted2);}
+.add-row input:focus{border-color:var(--border2);}
+.add-row button{padding:11px 16px;background:var(--gold);color:var(--ink);border:none;border-radius:4px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+.add-row button:active{opacity:.8;}
+
+/* PANTRY */
+.pantry-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.pantry-tag{font-size:12px;padding:6px 12px;border-radius:3px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s;}
+.pantry-tag.have{background:var(--green-bg);border:0.5px solid rgba(45,106,79,0.4);color:var(--green);}
+.pantry-tag.missing{background:var(--ink3);border:0.5px solid var(--border);color:var(--muted);}
+.pantry-tag button{background:none;border:none;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:0;opacity:.6;}
+
+/* SHOPPING LIST */
+.shop-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.shop-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;}
+.shop-item.checked{opacity:.45;}
+.shop-item.checked .shop-name{text-decoration:line-through;}
+.shop-check{width:22px;height:22px;border:1.5px solid var(--border2);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.shop-check.done{background:var(--gold);border-color:var(--gold);}
+.shop-check.done::after{content:'✓';color:var(--ink);font-size:13px;font-weight:600;}
+.shop-name{font-size:13px;color:var(--cream2);flex:1;}
+.shop-src{font-size:10px;color:var(--muted);letter-spacing:.05em;}
+.shop-del{background:none;border:none;color:var(--muted2);font-size:16px;cursor:pointer;padding:4px;opacity:.5;}
+
+/* RÉPERTOIRE */
+.saved-list{display:flex;flex-direction:column;gap:10px;}
+.saved-item{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color .2s;}
+.saved-item.open-item{border-color:var(--border2);}
+.saved-item-header{padding:14px 16px 12px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
+.saved-item-header:active{background:rgba(200,146,42,0.04);}
+.saved-icon{flex-shrink:0;margin-top:2px;font-size:15px;color:var(--gold);opacity:.7;}
+.saved-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;font-style:italic;color:var(--cream);line-height:1.2;margin-bottom:4px;}
+.saved-meta-row{font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
+.saved-dot{color:var(--border2);}
+.have-pill{font-size:9px;padding:2px 8px;border-radius:2px;margin-left:auto;flex-shrink:0;letter-spacing:.08em;text-transform:uppercase;align-self:center;}
+.have-all{background:var(--green-bg);color:var(--green);border:0.5px solid rgba(45,106,79,0.3);}
+.have-some{background:rgba(200,146,42,0.1);color:var(--gold2);border:0.5px solid var(--border);}
+.have-none{background:var(--ink3);color:var(--muted);border:0.5px solid var(--border);}
+
+.saved-detail{display:none;border-top:0.5px solid var(--border);padding:0 16px 16px;background:rgba(0,0,0,0.12);}
+.saved-detail.open{display:block;}
+.cat-pill{display:inline-block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--border);padding:3px 9px;border-radius:2px;margin-top:14px;margin-bottom:4px;}
+.scaler{display:flex;align-items:center;margin:14px 0 16px;background:var(--ink3);border:0.5px solid var(--border);border-radius:4px;overflow:hidden;}
+.scaler-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);padding:0 12px;flex:1;}
+.scaler-btn{width:42px;height:42px;background:none;border:none;color:var(--gold);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.scaler-btn:active{background:var(--gold-dim);}
+.scaler-val{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cream);min-width:32px;text-align:center;}
+.scaler-unit{font-size:10px;color:var(--muted);padding-right:4px;}
+
+.d-label{font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px;padding-top:16px;}
+.d-label::after{content:'';flex:1;height:0.5px;background:var(--border);}
+.d-ing{font-size:13px;color:var(--cream2);margin-bottom:5px;padding-left:14px;position:relative;line-height:1.5;display:flex;align-items:center;gap:8px;}
+.d-ing::before{content:"·";position:absolute;left:0;color:var(--gold);}
+.d-ing .qty{color:var(--gold2);font-weight:500;}
+.d-ing-status{width:18px;height:18px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;margin-left:auto;}
+.ing-have{background:var(--green-bg);color:var(--green);}
+.ing-miss{background:var(--red-bg);color:var(--red);}
+.d-step{font-size:13px;color:var(--cream2);margin-bottom:9px;padding-left:24px;position:relative;line-height:1.6;}
+.d-step-n{position:absolute;left:0;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--gold);font-weight:600;}
+.d-notes{font-size:12px;color:var(--muted);border-left:2px solid var(--gold);padding:9px 12px;line-height:1.6;font-style:italic;background:var(--gold-dim);border-radius:0 4px 4px 0;}
+
+.recipe-actions{display:flex;gap:8px;margin-top:14px;}
+.act-btn{flex:1;padding:11px;background:transparent;border:0.5px solid var(--border2);border-radius:4px;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.act-btn:active{background:var(--gold-dim);}
+.act-btn.green{color:var(--green);border-color:rgba(45,106,79,0.4);}
+
+/* INSPIRATION */
+.insp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.insp-card{background:var(--ink2);border:0.5px solid var(--border);border-radius:4px;padding:14px 12px;cursor:pointer;position:relative;overflow:hidden;}
+.insp-card:active{border-color:var(--border2);}
+.insp-flag{font-size:22px;display:block;margin-bottom:8px;}
+.insp-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:400;font-style:italic;color:var(--cream);line-height:1.2;margin-bottom:5px;}
+.insp-origin{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.insp-tags{display:flex;flex-wrap:wrap;gap:3px;}
+.insp-tag{font-size:9px;padding:2px 6px;background:rgba(200,146,42,0.07);border:0.5px solid var(--border);border-radius:2px;color:var(--muted);}
+.insp-diff{position:absolute;top:8px;right:8px;font-size:9px;}
+.diff-1{color:var(--green);}
+.diff-2{color:var(--gold2);}
+.diff-3{color:var(--red);}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;background:var(--ink);overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;max-width:480px;margin:0 auto;}
+.overlay.open{display:block;animation:fadeUp .2s ease;}
+.overlay-hdr{padding:calc(env(safe-area-inset-top,0px)+14px) 20px 14px;display:flex;align-items:center;gap:14px;border-bottom:0.5px solid var(--border);background:var(--ink);position:sticky;top:0;z-index:10;}
+.overlay-back{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;padding:0;display:flex;align-items:center;}
+.overlay-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-style:italic;color:var(--cream);}
+.overlay-body{padding:18px 20px 100px;}
+.overlay-loading{text-align:center;padding:70px 20px;}
+.overlay-loading p{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--muted);margin-top:18px;}
+
+.empty{text-align:center;padding:60px 20px;}
+.empty i{font-size:34px;color:var(--border2);display:block;margin-bottom:14px;}
+.empty p{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--muted);line-height:1.6;}
+.spinner{display:inline-block;width:16px;height:16px;border:1.5px solid rgba(200,146,42,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+.spinner-lg{width:34px;height:34px;border-width:2px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bottom-safe{height:env(safe-area-inset-bottom,0px);background:var(--ink);flex-shrink:0;}
+
+/* CLEAR BTN */
+.clear-btn{width:100%;padding:11px;background:transparent;border:0.5px solid rgba(192,57,43,0.3);border-radius:4px;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);cursor:pointer;margin-top:8px;}
+.clear-btn:active{background:var(--red-bg);}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="brand"><span class="brand-name">La Cuisine</span><span class="brand-star">✦ ✦ ✦</span></div>
+    <div class="brand-sub">Pour les esprits exigeants</div>
+    <div class="header-rule"></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('pantry')" id="tab-pantry"><i class="ti ti-fridge"></i>Skafferi</button>
+    <button class="tab" onclick="showTab('shop')" id="tab-shop"><i class="ti ti-shopping-cart"></i><span>Handla <span class="tab-badge" id="shop-badge" style="display:none">0</span></span></button>
+    <button class="tab" onclick="showTab('saved')" id="tab-saved"><i class="ti ti-book"></i>Recept</button>
+    <button class="tab" onclick="showTab('insp')" id="tab-insp"><i class="ti ti-star"></i>Inspiration</button>
+  </div>
+  <div class="content">
+
+    <!-- SKAFFERI -->
+    <div class="pane active" id="pane-pantry">
+      <div class="sec-label" style="margin-bottom:12px">Vad har du hemma?</div>
+      <div class="add-row">
+        <input type="text" id="pantryInput" placeholder="Lägg till vara..." onkeydown="if(event.key==='Enter'){addPantry();this.blur()}">
+        <button onclick="addPantry()">+ Lägg till</button>
+      </div>
+      <div class="pantry-grid" id="pantryGrid"></div>
+      <button class="clear-btn" onclick="clearPantry()">Rensa skafferi</button>
+    </div>
+
+    <!-- INKÖPSLISTA -->
+    <div class="pane" id="pane-shop">
+      <div class="sec-label" style="margin-bottom:12px">Inköpslista</div>
+      <div class="add-row">
+        <input type="text" id="shopInput" placeholder="Lägg till vara..." onkeydown="if(event.key==='Enter'){addShopItem();this.blur()}">
+        <button onclick="addShopItem()">+ Lägg till</button>
+      </div>
+      <div class="shop-list" id="shopList"></div>
+      <button class="clear-btn" id="clearCheckedBtn" onclick="clearChecked()" style="display:none">Rensa inköpta varor</button>
+    </div>
+
+    <!-- RECEPT -->
+    <div class="pane" id="pane-saved"><div id="savedContainer"></div></div>
+
+    <!-- INSPIRATION -->
+    <div class="pane" id="pane-insp">
+      <div class="sec-label" style="margin-bottom:14px">Ikoniska världsrätter</div>
+      <div class="insp-grid" id="inspGrid"></div>
+    </div>
+
+  </div>
+  <div class="bottom-safe"></div>
+</div>
+
+<!-- OVERLAY för inspiration -->
+<div class="overlay" id="recipeOverlay">
+  <div class="overlay-hdr">
+    <button class="overlay-back" onclick="closeOverlay()"><i class="ti ti-arrow-left"></i></button>
+    <div class="overlay-title" id="overlayTitle"></div>
+  </div>
+  <div class="overlay-body" id="overlayBody"></div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const RECIPES = [
+  {id:"pre1",name:"Boeuf Bourguignon",category:"Kött · Longue cuisson",time:"3,5 tim",basePortions:6,source:"Michelin-inspirerad · Maj 2025",
+   ingredients:[{qty:1150,unit:"g",text:"högrev, 5 cm kuber"},{qty:280,unit:"g",text:"rökt sidfläsk (lardons)"},{qty:60,unit:"g",text:"osaltat smör"},{qty:30,unit:"g",text:"smör till montering"},{qty:2,unit:"msk",text:"neutral olja"},{qty:200,unit:"g",text:"gul lök"},{qty:150,unit:"g",text:"morot"},{qty:80,unit:"g",text:"selleri"},{qty:5,unit:"st",text:"vitlöksklyftor"},{qty:2,unit:"msk",text:"tomatpuré"},{qty:700,unit:"ml",text:"pinot noir / bourgogne"},{qty:350,unit:"ml",text:"kalvfond"},{scalable:false,text:"timjan, lagerblad"},{qty:1,unit:"tsk",text:"ancho chilipulver"},{qty:300,unit:"g",text:"kantareller"},{qty:250,unit:"g",text:"syltlök"},{qty:1,unit:"tsk",text:"dijonsenap"},{scalable:false,text:"salt, svartpeppar"}],
+   steps:["Marinera köttet i rödvin, timjan och lagerblad minst 4 h. Torka av — spara vinet.","Blanchera lardons 2 min, torka, bryn gyllenbrunt. Reservera.","Bryn köttet i omgångar på maxvärme — djupt brun yta. Reservera.","Mirepoix: fräs lök, morot, selleri 8 min. Vitlök + ancho, rör 1 min.","Tomatpuré 2 min. Deglacera med vin, fond in. Allt tillbaka.","Ugn 150°C lock, 2,5–3 tim.","Sila såsen, reducera tills blank. Monter au beurre + dijonsenap.","Syltlök + kantareller sista 10 min."],
+   notes:"Dijon + monter au beurre lyfter från hemmakok till restaurang."},
+  {id:"pre2",name:"Sjömansbiff — imponerande",category:"Kött · Husmanskost lyft",time:"2,5 tim",basePortions:4,source:"Autentisk teknik",
+   ingredients:[{qty:800,unit:"g",text:"bogbiff, TVÄRS fibrerna"},{qty:800,unit:"g",text:"fast potatis (Amandine)"},{qty:3,unit:"st",text:"gula lökar"},{qty:2,unit:"st",text:"märgben"},{qty:330,unit:"ml",text:"porter"},{qty:2,unit:"msk",text:"oxfond"},{qty:1,unit:"msk",text:"japansk soja"},{qty:200,unit:"ml",text:"vatten"},{qty:50,unit:"g",text:"smör"},{scalable:false,text:"lagerblad, timjan"},{scalable:false,text:"persilja, saltgurka, lingon"}],
+   steps:["Ugn 150°C. Skär köttet TVÄRS fibrerna. Salta generöst.","Bryn löken gyllenbrun 10 min. Reservera.","Rykande het panna. Bryn köttet — djupt brun yta.","Varva: potatis → lök → kött. Avsluta med potatis.","Porter + fond + soja + vatten. Häll över. Märgben in.","Lock, ugn 2–2,5 tim."],
+   notes:"Märgben + japansk soja är hemliga vapnen. Tvärskärning är ICKE FÖRHANDLINGSBAR."},
+  {id:"pre3",name:"Kokosmjölkscurry med kyckling",category:"Fågel · Indisk bas",time:"35 min",basePortions:4,source:"Slutgiltig version",
+   ingredients:[{qty:600,unit:"g",text:"kycklinglårfilé"},{qty:2,unit:"msk",text:"kokosolja"},{qty:20,unit:"g",text:"smör"},{qty:2,unit:"tsk",text:"lökpulver"},{qty:3,unit:"st",text:"vitlöksklyftor"},{qty:1,unit:"tsk",text:"gurkmeja"},{qty:2,unit:"tsk",text:"garam masala"},{qty:2,unit:"msk",text:"karrypulver"},{qty:1,unit:"tsk",text:"cayennepeppar"},{qty:1,unit:"tsk",text:"paprikapulver"},{qty:1,unit:"tsk",text:"citronpeppar"},{qty:2,unit:"tsk",text:"sambal oelek"},{qty:3,unit:"msk",text:"krossad tomat"},{qty:100,unit:"ml",text:"vispgrädde"},{qty:100,unit:"ml",text:"kokosmjölk"},{qty:1,unit:"tsk",text:"örtsalt"},{qty:1,unit:"msk",text:"arrowrot"},{qty:2,unit:"st",text:"morötter"},{qty:200,unit:"g",text:"strimlad kål"},{qty:300,unit:"ml",text:"ris"}],
+   steps:["Koka ris.","Bryn kyckling i kokosolja+smör. Reservera.","Fräs lökpulver+vitlök 2 min.","Blomma kryddorna 60 sek. Sambal+tomat in.","Morötter, kål, grädde, kokosmjölk. Kyckling tillbaka. Sjud 20 min.","Red med arrowrot+vatten. Sjud 2 min. Smaka av."],
+   notes:"Blomningsteget (steg 4) är hemligheten. Arrowrot ger blank sås."},
+  {id:"pre4",name:"Chilli con Carne — på riktigt",category:"Kött · Mexikansk teknik",time:"3–4 tim",basePortions:6,source:"Autentisk — torkade chilis",
+   ingredients:[{qty:1200,unit:"g",text:"högrev, 3–4 cm kuber"},{qty:4,unit:"st",text:"torkade ancho-chilis"},{qty:3,unit:"st",text:"torkade guajillo-chilis"},{qty:1,unit:"st",text:"chipotle i adobo"},{qty:2,unit:"st",text:"gula lökar"},{qty:5,unit:"st",text:"vitlöksklyftor"},{qty:400,unit:"g",text:"krossade tomater"},{qty:200,unit:"ml",text:"porter"},{qty:200,unit:"ml",text:"nötbuljong"},{qty:1,unit:"tsk",text:"spiskummin"},{qty:1,unit:"tsk",text:"oregano"},{qty:20,unit:"g",text:"mörk choklad 70%"},{qty:1,unit:"msk",text:"äppelcidervinäger"},{qty:2,unit:"burk",text:"kidney beans"}],
+   steps:["Chilipasta: rosta, blötlägg 20 min, mixa.","Bryn köttet — djupt brun yta.","Stek lök+vitlök. Chilipasta+spiskummin 2 min.","Porter+tomater+buljong. Köttet in.","Sjud 2,5–3 h tills köttet faller isär.","Dra isär köttet. Choklad+vinäger+beans. 20 min till."],
+   notes:"Torkade chilis är skillnaden. Choklad tar bort beska. Bättre dag 2."},
+  {id:"pre5",name:"Ragù alla Bolognese",category:"Pasta · Italiensk klassiker",time:"3 tim",basePortions:4,source:"Accademia Italiana 2023",
+   ingredients:[{qty:300,unit:"g",text:"grovmalen nötfärs"},{qty:150,unit:"g",text:"pancetta, EJ rökt"},{qty:1,unit:"st",text:"gul lök"},{qty:1,unit:"st",text:"morot"},{qty:2,unit:"st",text:"stjälkar selleri"},{qty:150,unit:"ml",text:"torrt vitt vin"},{qty:2,unit:"msk",text:"tomatpuré"},{qty:200,unit:"g",text:"passerade tomater"},{qty:150,unit:"ml",text:"köttbuljong"},{qty:100,unit:"ml",text:"helmjölk"},{scalable:false,text:"olivolja, salt, peppar"},{scalable:false,text:"tagliatelle"}],
+   steps:["Smält pancettan i olivolja.","Soffritto: fräs lök+morot+selleri låg värme — INTE brynt.","Bryn köttet 10 min tills vätskan avdunstat.","Deglacera med vin. Tomatpuré+tomater+buljong.","Sjud lock lägsta värme 2–3 h.","Sista 20 min: helmjölk. Blanda pasta i pannan."],
+   notes:"Inget vitlök, ingen oregano. Helmjölk är hemligheten."},
+  {id:"pre6",name:"Köttfärs, vitkål & crème fraîche",category:"Snabbt · LCHF",time:"20 min",basePortions:2,source:"LCHF snabbrätt",
+   ingredients:[{qty:400,unit:"g",text:"kryddad nötfärs"},{qty:200,unit:"g",text:"strimlad vitkål"},{qty:2,unit:"msk",text:"smör"},{qty:200,unit:"ml",text:"crème fraîche"},{qty:2,unit:"msk",text:"ajvar stark"},{qty:1,unit:"msk",text:"sambal oelek"},{scalable:false,text:"salt, svartpeppar"}],
+   steps:["Stek vitkål i smör tills karamelliserad.","Stek färsen. Salta och peppra.","Crème fraîche+ajvar+sambal. Sjud 2 min.","Vitkål under, sås över."],
+   notes:"Ajvar+sambal är smakdrivarna."},
+  {id:"pre7",name:"Tonkotsu Ramen",category:"Japanskt · Umami",time:"8–12 tim",basePortions:4,source:"Världsklassiker",
+   ingredients:[{qty:1500,unit:"g",text:"fläskben"},{qty:500,unit:"g",text:"fläskmage (chashu)"},{qty:4,unit:"st",text:"ägg"},{scalable:false,text:"ramen-nudlar"},{qty:6,unit:"st",text:"vitlöksklyftor"},{qty:50,unit:"g",text:"ingefära"},{qty:2,unit:"msk",text:"sake"},{qty:2,unit:"msk",text:"mirin"},{qty:3,unit:"msk",text:"soja"},{scalable:false,text:"sesamolja, majs, nori, bambuskott"}],
+   steps:["Blanchera ben 10 min. Häll av och skölj.","KRAFTIGT kok 4–6 h → vit krämig buljong.","Rosta vitlök+ingefära. In sista timmen.","Chashu: rulla, bind, bryn, sjud i soja/mirin/sake 2 h.","Ägg: 6,5 min, kylbad, marinad 4 h.","Bygg: nudlar→buljong→chashu→ägg→toppings→sesamolja."],
+   notes:"Kraftigt kok (inte sjud) = vit krämig buljong."},
+  {id:"pre8",name:"Argentinsk Asado & Chimichurri",category:"Grill · LCHF",time:"45 min",basePortions:4,source:"Världsklassiker",
+   ingredients:[{qty:1200,unit:"g",text:"entrecôte eller flankstek"},{scalable:false,text:"grovt havssalt"},{qty:1,unit:"knippe",text:"persilja (chimichurri)"},{qty:4,unit:"st",text:"vitlöksklyftor (chimichurri)"},{qty:1,unit:"tsk",text:"oregano (chimichurri)"},{qty:1,unit:"tsk",text:"chiliflakes (chimichurri)"},{qty:3,unit:"msk",text:"rödvinsvinäger (chimichurri)"},{qty:8,unit:"msk",text:"olivolja (chimichurri)"}],
+   steps:["Chimichurri: blanda allt, vila 30 min–2 h.","Köttet rumstemperatur 30 min. Torka. Grovt havssalt.","Maxvärme. 4–5 min/sida → 55–58°C kärntemp.","Vila 5–10 min. Skär MOT fibrerna.","Rikligt med chimichurri."],
+   notes:"Bra kött + eld + chimichurri. Inget mer."}
+];
+
+const INSPIRATION = [
+  {name:"Beef Wellington",origin:"England",flag:"🇬🇧",diff:3,tags:["Oxfilé","Duxelles","Smördeg"]},
+  {name:"Coq au Vin",origin:"Frankrike",flag:"🇫🇷",diff:2,tags:["Kyckling","Bourgogne","Lardons"]},
+  {name:"Duck Confit",origin:"Frankrike",flag:"🇫🇷",diff:2,tags:["Anka","Ankfett","Långkok"]},
+  {name:"Bouillabaisse",origin:"Marseille",flag:"🇫🇷",diff:3,tags:["Saffran","Havsfisk","Rouille"]},
+  {name:"Risotto al Tartufo",origin:"Italien",flag:"🇮🇹",diff:2,tags:["Tryffel","Arborio","Parmesan"]},
+  {name:"Sole Meunière",origin:"Frankrike",flag:"🇫🇷",diff:1,tags:["Sjötunga","Brynt smör","Citron"]},
+  {name:"Crème Brûlée",origin:"Frankrike",flag:"🇫🇷",diff:1,tags:["Vanilj","Grädde","Karamell"]},
+  {name:"Tarte Tatin",origin:"Frankrike",flag:"🇫🇷",diff:2,tags:["Äpple","Karamell","Smördeg"]},
+  {name:"Osso Buco",origin:"Milano",flag:"🇮🇹",diff:2,tags:["Kalvlägg","Gremolata","Saffransrisotto"]},
+  {name:"Peking Duck",origin:"Kina",flag:"🇨🇳",diff:3,tags:["Anka","Hoisin","Pannkakor"]},
+  {name:"Mole Negro",origin:"Oaxaca",flag:"🇲🇽",diff:3,tags:["Chili","Choklad","30 ingredienser"]},
+  {name:"Lobster Thermidor",origin:"Paris",flag:"🇫🇷",diff:2,tags:["Hummer","Cognac","Gruyère"]},
+  {name:"Wiener Schnitzel",origin:"Wien",flag:"🇦🇹",diff:1,tags:["Kalv","Ströbröd","Citron"]},
+  {name:"Pad Thai",origin:"Thailand",flag:"🇹🇭",diff:1,tags:["Risnudlar","Tamarind","Jordnötter"]},
+  {name:"Ceviche",origin:"Peru",flag:"🇵🇪",diff:1,tags:["Rå fisk","Lime","Aji Amarillo"]},
+  {name:"Bánh Mì",origin:"Vietnam",flag:"🇻🇳",diff:1,tags:["Baguette","Picklade grönsaker","Pâté"]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let pantry = [];      // [{name, id}]
+let shopItems = [];   // [{name, source, checked, id}]
+let portionScales = {};
+
+function load(){
+  try{ pantry = JSON.parse(localStorage.getItem('lc_pantry')||'[]'); }catch(e){ pantry=[]; }
+  try{ shopItems = JSON.parse(localStorage.getItem('lc_shop')||'[]'); }catch(e){ shopItems=[]; }
+  RECIPES.forEach(r=>{ portionScales[r.id] = r.basePortions; });
+}
+function savePantry(){ try{ localStorage.setItem('lc_pantry', JSON.stringify(pantry)); }catch(e){} }
+function saveShop(){ try{ localStorage.setItem('lc_shop', JSON.stringify(shopItems)); }catch(e){} }
+load();
+
+// ── TABS ──────────────────────────────────────────────────────
+function showTab(name){
+  ['pantry','shop','saved','insp'].forEach(t=>{
+    document.getElementById('pane-'+t).classList.toggle('active', t===name);
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if(name==='pantry') renderPantry();
+  if(name==='shop') renderShop();
+  if(name==='saved') renderSaved();
+  if(name==='insp') renderInspiration();
+  updateShopBadge();
+}
+
+// ── PANTRY ────────────────────────────────────────────────────
+function addPantry(){
+  const input = document.getElementById('pantryInput');
+  const val = input.value.trim();
+  if(!val) return;
+  pantry.push({name:val, id:'p_'+Date.now()});
+  savePantry();
+  input.value = '';
+  renderPantry();
+  // re-render saved to update have-pills
+  if(document.getElementById('pane-saved').classList.contains('active')) renderSaved();
+}
+
+function removePantry(id){
+  pantry = pantry.filter(p=>p.id!==id);
+  savePantry();
+  renderPantry();
+  if(document.getElementById('pane-saved').classList.contains('active')) renderSaved();
+}
+
+function clearPantry(){
+  if(confirm('Rensa hela skafferiet?')){ pantry=[]; savePantry(); renderPantry(); }
+}
+
+function hasPantryItem(text){
+  const t = text.toLowerCase();
+  return pantry.some(p => t.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(t.split(' ')[0]));
+}
+
+function renderPantry(){
+  const grid = document.getElementById('pantryGrid');
+  if(!pantry.length){
+    grid.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0">Lägg till vad du har hemma — recept visar vad som saknas.</div>';
+    return;
+  }
+  grid.innerHTML = pantry.map(p=>`
+    <div class="pantry-tag have">
+      ${p.name}
+      <button onclick="removePantry('${p.id}')" aria-label="Ta bort">×</button>
+    </div>`).join('');
+}
+
+// ── SHOP ──────────────────────────────────────────────────────
+function addShopItem(name, source){
+  const input = document.getElementById('shopInput');
+  const val = name || input.value.trim();
+  if(!val) return;
+  if(!shopItems.find(s=>s.name.toLowerCase()===val.toLowerCase())){
+    shopItems.push({name:val, source:source||'Manuellt', checked:false, id:'s_'+Date.now()});
+    saveShop();
+  }
+  if(!name) input.value = '';
+  renderShop();
+  updateShopBadge();
+}
+
+function toggleShop(id){
+  const item = shopItems.find(s=>s.id===id);
+  if(item){ item.checked=!item.checked; saveShop(); renderShop(); updateShopBadge(); }
+}
+
+function removeShopItem(id){
+  shopItems = shopItems.filter(s=>s.id!==id);
+  saveShop(); renderShop(); updateShopBadge();
+}
+
+function clearChecked(){
+  // add checked items to pantry automatically
+  shopItems.filter(s=>s.checked).forEach(s=>{
+    if(!pantry.find(p=>p.name.toLowerCase()===s.name.toLowerCase())){
+      pantry.push({name:s.name, id:'p_'+Date.now()});
+    }
+  });
+  savePantry();
+  shopItems = shopItems.filter(s=>!s.checked);
+  saveShop(); renderShop(); renderPantry(); updateShopBadge();
+}
+
+function updateShopBadge(){
+  const count = shopItems.filter(s=>!s.checked).length;
+  const badge = document.getElementById('shop-badge');
+  badge.style.display = count>0?'inline-block':'none';
+  badge.textContent = count;
+}
+
+function renderShop(){
+  const list = document.getElementById('shopList');
+  const clearBtn = document.getElementById('clearCheckedBtn');
+  const hasChecked = shopItems.some(s=>s.checked);
+  clearBtn.style.display = hasChecked ? 'block' : 'none';
+  if(!shopItems.length){
+    list.innerHTML='<div class="empty" style="padding:30px 0"><i class="ti ti-shopping-cart"></i><p>Listan är tom.<br>Öppna ett recept och lägg till<br>det som saknas.</p></div>';
+    return;
+  }
+  // unchecked first
+  const sorted = [...shopItems.filter(s=>!s.checked), ...shopItems.filter(s=>s.checked)];
+  list.innerHTML = sorted.map(s=>`
+    <div class="shop-item ${s.checked?'checked':''}" id="si-${s.id}">
+      <div class="shop-check ${s.checked?'done':''}" onclick="toggleShop('${s.id}')"></div>
+      <div style="flex:1">
+        <div class="shop-name">${s.name}</div>
+        <div class="shop-src">${s.source}</div>
+      </div>
+      <button class="shop-del" onclick="removeShopItem('${s.id}')"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+
+// ── RÉPERTOIRE ────────────────────────────────────────────────
+function fmtQty(qty,scale,base){
+  const v=qty*scale/base;
+  if(v>=100)return Math.round(v).toString();
+  if(v>=10)return(Math.round(v*10)/10).toString();
+  const fracs=[[1/4,'¼'],[1/3,'⅓'],[1/2,'½'],[2/3,'⅔'],[3/4,'¾']];
+  for(const[f,s]of fracs)if(Math.abs(v-f)<0.05)return s;
+  return(Math.round(v*100)/100).toString().replace('.',',');
+}
+
+function getRecipeStatus(recipe){
+  const ings = recipe.ingredients.filter(i=>i.qty);
+  if(!ings.length) return 'none';
+  if(!pantry.length) return 'none';
+  const haveCount = ings.filter(i=>hasPantryItem(i.text)).length;
+  if(haveCount===ings.length) return 'all';
+  if(haveCount>0) return 'some';
+  return 'none';
+}
+
+function getMissingIngredients(recipe){
+  return recipe.ingredients.filter(i=>i.qty && !hasPantryItem(i.text));
+}
+
+function addMissingToShop(recipe){
+  const missing = getMissingIngredients(recipe);
+  missing.forEach(ing=>{
+    addShopItem(ing.text, recipe.name);
+  });
+  updateShopBadge();
+  // show confirmation
+  const btn = document.getElementById('missing-btn-'+recipe.id);
+  if(btn){ btn.innerHTML='<i class="ti ti-check"></i> Lagt till'; btn.classList.add('green'); }
+}
+
+function renderSaved(){
+  const container = document.getElementById('savedContainer');
+  const statusOrder = {all:0, some:1, none:2};
+  const sorted = [...RECIPES].sort((a,b)=>statusOrder[getRecipeStatus(a)]-statusOrder[getRecipeStatus(b)]);
+
+  container.innerHTML = '<div class="saved-list">'+sorted.map((r,i)=>{
+    const status = getRecipeStatus(r);
+    const scale = portionScales[r.id]||r.basePortions;
+    const pillClass = status==='all'?'have-all':status==='some'?'have-some':'have-none';
+    const pillText = status==='all'?'✦ Allt finns':status==='some'?'◦ Delvis':'– Saknas';
+    const missingCount = getMissingIngredients(r).length;
+
+    return`<div class="saved-item" id="sitem-${r.id}">
+      <div class="saved-item-header" onclick="toggleSaved('${r.id}')">
+        <i class="ti ti-bookmark-filled saved-icon"></i>
+        <div style="flex:1">
+          <div class="saved-name">${r.name}</div>
+          <div class="saved-meta-row"><span>${r.category}</span><span class="saved-dot">·</span><span>${r.time}</span></div>
+        </div>
+        <span class="have-pill ${pillClass}">${pillText}</span>
+      </div>
+      <div class="saved-detail" id="sdetail-${r.id}">
+        <span class="cat-pill">${r.source}</span>
+        <div class="scaler"><span class="scaler-label">Portioner</span><button class="scaler-btn" onclick="changePortions('${r.id}',-1)">−</button><span class="scaler-val" id="sv-${r.id}">${scale}</span><span class="scaler-unit">pers</span><button class="scaler-btn" onclick="changePortions('${r.id}',1)">+</button></div>
+        <div class="d-label">Mise en place</div>
+        ${r.ingredients.filter(x=>x&&(x.text||x.qty)).map(ing=>{
+          if(ing.scalable===false||!ing.qty) return`<div class="d-ing">${ing.text}</div>`;
+          const have = hasPantryItem(ing.text);
+          return`<div class="d-ing">
+            <span class="qty">${fmtQty(ing.qty,scale,r.basePortions)} ${ing.unit}</span> ${ing.text}
+            <span class="d-ing-status ${have?'ing-have':'ing-miss'}">${have?'✓':'✗'}</span>
+          </div>`;
+        }).join('')}
+        <div class="d-label">Méthode</div>
+        ${r.steps.map((s,si)=>`<div class="d-step"><span class="d-step-n">${si+1}</span>${s}</div>`).join('')}
+        ${r.notes?`<div class="d-label">Notes</div><div class="d-notes">${r.notes}</div>`:''}
+        <div class="recipe-actions">
+          ${missingCount>0?`<button class="act-btn" id="missing-btn-${r.id}" onclick="addMissingToShop(RECIPES.find(x=>x.id==='${r.id}'))"><i class="ti ti-shopping-cart"></i> ${missingCount} saknas — lägg i lista</button>`:'<div class="act-btn green" style="cursor:default"><i class="ti ti-check"></i> Allt finns hemma</div>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function toggleSaved(id){
+  const d=document.getElementById('sdetail-'+id);
+  const it=document.getElementById('sitem-'+id);
+  const open=d.classList.toggle('open');
+  it.classList.toggle('open-item',open);
+}
+
+function changePortions(id,delta){
+  portionScales[id]=Math.min(50,Math.max(1,(portionScales[id]||4)+delta));
+  const scale=portionScales[id];
+  document.getElementById('sv-'+id).textContent=scale;
+  // re-render ingredient amounts
+  const r=RECIPES.find(x=>x.id===id);
+  if(!r)return;
+  // just re-render the whole saved pane
+  renderSaved();
+  // re-open
+  const d=document.getElementById('sdetail-'+id);
+  const it=document.getElementById('sitem-'+id);
+  if(d){d.classList.add('open');it.classList.add('open-item');}
+}
+
+// ── INSPIRATION ───────────────────────────────────────────────
+function renderInspiration(){
+  const grid=document.getElementById('inspGrid');
+  const dl=['','★','★★','★★★'];
+  const dc=['','diff-1','diff-2','diff-3'];
+  grid.innerHTML=INSPIRATION.map((d,i)=>`
+    <div class="insp-card" onclick="openInspiration(${i})">
+      <span class="insp-diff ${dc[d.diff]}">${dl[d.diff]}</span>
+      <span class="insp-flag">${d.flag}</span>
+      <div class="insp-name">${d.name}</div>
+      <div class="insp-origin">${d.origin}</div>
+      <div class="insp-tags">${d.tags.map(t=>`<span class="insp-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function openInspiration(i){
+  const dish=INSPIRATION[i];
+  document.getElementById('overlayTitle').textContent=dish.name;
+  document.getElementById('overlayBody').innerHTML=`<div class="overlay-loading"><span class="spinner spinner-lg"></span><p>Komponerar receptet...</p></div>`;
+  document.getElementById('recipeOverlay').classList.add('open');
+  // Since no API, show a note
+  setTimeout(()=>{
+    document.getElementById('overlayBody').innerHTML=`
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:40px;margin-bottom:16px">${dish.flag}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--cream);margin-bottom:8px">${dish.name}</div>
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:24px">${dish.origin}</div>
+        <div style="font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:24px;border:0.5px solid var(--border);border-radius:4px;padding:16px;text-align:left">
+          <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">För att aktivera AI-recept</div>
+          AI-genererade recept kräver API-credits från console.anthropic.com (~$5 för månader av användning). Skaffa credits och lägg in din API-nyckel i appen för fullständiga recept på alla ${INSPIRATION.length} världsrätter.
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">
+          ${dish.tags.map(t=>`<span style="font-size:11px;padding:4px 10px;background:var(--gold-dim);border:0.5px solid var(--border);border-radius:2px;color:var(--cream2)">${t}</span>`).join('')}
+        </div>
+      </div>`;
+  }, 600);
+}
+
+function closeOverlay(){
+  document.getElementById('recipeOverlay').classList.remove('open');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderPantry();
+updateShopBadge();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
 
